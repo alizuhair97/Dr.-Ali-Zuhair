@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ICU Board">
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>لوحة المرضى الاحترافية</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --critical:#dc2626; --critical-bg:#fff1f1; --critical-bd:#fca5a5;
+  --watch:#d97706;    --watch-bg:#fffbeb;    --watch-bd:#fcd34d;
+  --stable:#16a34a;   --stable-bg:#f0fdf4;   --stable-bd:#86efac;
+  --new:#7c3aed;      --new-bg:#faf5ff;      --new-bd:#c4b5fd;
+  --accent:#0f172a;   --mid:#1e293b;
+  --btn:#1e40af;      --btn2:#1d4ed8;
+  --bg:#f0f4f8;       --card:#ffffff;
+  --text:#1e293b;     --muted:#64748b;       --border:#e2e8f0;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--text);direction:rtl;display:flex;flex-direction:column;}
+
+/* ── HEADER ── */
+.header{
+  background:var(--accent);color:white;
+  padding:calc(var(--safe-top) + 10px) 14px 10px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;z-index:50;
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
+}
+.header-brand{display:flex;align-items:center;gap:9px;}
+.header-icon{width:34px;height:34px;background:#1e40af;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.header-title{font-size:15px;font-weight:700;}
+.header-sub{font-size:10px;color:#94a3b8;margin-top:1px;}
+.header-time{font-size:11px;color:#94a3b8;text-align:left;line-height:1.5;}
+
+/* ── WARD TABS ── */
+.ward-tabs-wrap{background:var(--mid);flex-shrink:0;overflow-x:auto;display:flex;align-items:stretch;gap:0;border-bottom:1px solid #334155;scrollbar-width:none;}
+.ward-tabs-wrap::-webkit-scrollbar{display:none;}
+.ward-tab{
+  font-family:'IBM Plex Sans Arabic',sans-serif;
+  font-size:12px;font-weight:600;
+  padding:10px 14px;
+  background:none;border:none;color:#94a3b8;
+  cursor:pointer;white-space:nowrap;
+  border-bottom:3px solid transparent;
+  transition:all .18s;flex-shrink:0;
+  display:flex;align-items:center;gap:6px;
+}
+.ward-tab.active{color:white;border-bottom-color:#3b82f6;}
+.ward-tab .tab-count{
+  font-size:10px;font-weight:700;
+  background:#334155;color:#94a3b8;
+  padding:1px 6px;border-radius:10px;
+}
+.ward-tab.active .tab-count{background:#1e40af;color:white;}
+.ward-tab-add{
+  font-family:'IBM Plex Sans Arabic',sans-serif;
+  padding:10px 12px;background:none;border:none;
+  color:#3b82f6;cursor:pointer;font-size:18px;flex-shrink:0;
+  display:flex;align-items:center;
+}
+
+/* ── STATS BAR ── */
+.stats-bar{
+  display:flex;gap:6px;padding:8px 12px;
+  overflow-x:auto;background:white;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+  scrollbar-width:none;
+}
+.stats-bar::-webkit-scrollbar{display:none;}
+.stat-chip{
+  display:flex;align-items:center;gap:4px;
+  padding:4px 9px;border-radius:20px;
+  font-size:10px;font-weight:700;white-space:nowrap;flex-shrink:0;
+}
+.stat-chip.cr{background:var(--critical-bg);color:var(--critical);}
+.stat-chip.wa{background:var(--watch-bg);color:var(--watch);}
+.stat-chip.st{background:var(--stable-bg);color:var(--stable);}
+.stat-chip.np{background:var(--new-bg);color:var(--new);}
+.stat-chip.to{background:#f1f5f9;color:#475569;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.sdot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1.4s infinite;}
+
+/* ── SEARCH ── */
+.search-wrap{padding:8px 12px;background:white;border-bottom:1px solid var(--border);flex-shrink:0;}
+.search-input{
+  width:100%;padding:8px 14px;
+  border:1.5px solid var(--border);border-radius:10px;
+  font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;
+  direction:rtl;outline:none;transition:border .2s;background:var(--bg);
+}
+.search-input:focus{border-color:var(--btn);background:white;}
+
+/* ── SCROLL AREA ── */
+.scroll-area{flex:1;overflow-y:auto;padding:10px 12px calc(var(--safe-bot) + 80px);}
+.scroll-area::-webkit-scrollbar{width:3px;}
+.scroll-area::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px;}
+
+/* ── WARD HEADER ── */
+.ward-header-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;padding:10px 12px;
+  background:var(--card);border-radius:12px;
+  border:1.5px solid var(--border);
+}
+.ward-name-display{font-size:15px;font-weight:700;}
+.ward-name-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.ward-edit-btn{
+  background:#f1f5f9;border:none;border-radius:8px;
+  padding:6px 11px;font-family:'IBM Plex Sans Arabic',sans-serif;
+  font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;
+  display:flex;align-items:center;gap:4px;
+}
+
+/* ── PATIENT CARD ── */
+.card{
+  background:var(--card);border-radius:14px;
+  margin-bottom:10px;border:1.5px solid var(--border);
+  overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.04);
+  transition:box-shadow .2s;
+}
+.card:active{box-shadow:0 4px 16px rgba(0,0,0,.1);}
+.card.critical{border-color:var(--critical-bd);}
+.card.watch{border-color:var(--watch-bd);}
+.card.stable{border-color:var(--stable-bd);}
+.card.new-patient{border-color:var(--new-bd);}
+
+.card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px 8px;border-bottom:1px solid var(--border);
+  position:relative;
+}
+.card-header::after{
+  content:'';position:absolute;right:0;top:0;bottom:0;
+  width:4px;border-radius:0 4px 4px 0;
+}
+.card.critical .card-header::after{background:var(--critical);}
+.card.watch    .card-header::after{background:var(--watch);}
+.card.stable   .card-header::after{background:var(--stable);}
+.card.new-patient .card-header::after{background:var(--new);}
+
+.patient-name{font-size:14px;font-weight:700;}
+.patient-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.status-badge{
+  font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;
+  display:flex;align-items:center;gap:4px;flex-shrink:0;
+}
+.status-badge.critical{background:var(--critical-bg);color:var(--critical);}
+.status-badge.watch{background:var(--watch-bg);color:var(--watch);}
+.status-badge.stable{background:var(--stable-bg);color:var(--stable);}
+.status-badge.new-patient{background:var(--new-bg);color:var(--new);}
+
+.card-body{padding:10px 12px;}
+.diag-line{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;}
+.tags-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
+.tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:6px;background:#f1f5f9;color:var(--muted);border:1px solid var(--border);}
+.sec-title{font-size:10px;font-weight:700;color:var(--muted);margin:8px 0 4px;}
+.items-ul{list-style:none;}
+.items-ul li{font-size:12px;padding:3px 0;border-bottom:1px solid #f8fafc;display:flex;align-items:flex-start;gap:5px;}
+.items-ul.sym li::before{content:'•';color:var(--critical);font-weight:700;flex-shrink:0;}
+.items-ul.rec li::before{content:'→';color:var(--btn);font-weight:700;flex-shrink:0;}
+
+.card-actions{
+  display:flex;gap:5px;padding:8px 10px;
+  border-top:1px solid var(--border);background:#fafbfc;flex-wrap:wrap;
+}
+.act-btn{
+  font-family:'IBM Plex Sans Arabic',sans-serif;font-size:11px;font-weight:600;
+  padding:5px 9px;border-radius:8px;border:1.5px solid var(--border);
+  background:white;color:var(--text);cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;gap:3px;
+}
+.act-btn:active{transform:scale(.96);}
+.act-btn.pr{color:var(--btn);border-color:#bfdbfe;}
+.act-btn.pr:active{background:#eff6ff;}
+.act-btn.su{color:var(--stable);border-color:var(--stable-bd);}
+.act-btn.su:active{background:var(--stable-bg);}
+.act-btn.da{color:var(--critical);border-color:var(--critical-bd);}
+.act-btn.da:active{background:var(--critical-bg);}
+
+/* ── FAB ── */
+.fab{
+  position:fixed;bottom:calc(var(--safe-bot) + 16px);left:16px;
+  background:var(--btn);color:white;border:none;border-radius:50px;
+  padding:13px 20px;font-family:'IBM Plex Sans Arabic',sans-serif;
+  font-size:13px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 20px rgba(30,64,175,.45);z-index:100;
+  display:flex;align-items:center;gap:7px;transition:all .2s;
+}
+.fab:active{transform:scale(.96);}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:40px 20px;color:var(--muted);}
+.empty-icon{font-size:40px;margin-bottom:10px;}
+.empty p{font-size:13px;}
+
+/* ── MODAL ── */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);
+  z-index:200;display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .22s;
+}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{
+  background:white;border-radius:22px 22px 0 0;
+  width:100%;max-width:520px;
+  max-height:88vh;overflow-y:auto;
+  padding:20px 16px calc(var(--safe-bot) + 28px);
+  transform:translateY(40px);transition:transform .25s;
+}
+.overlay.open .modal{transform:translateY(0);}
+.modal::-webkit-scrollbar{display:none;}
+.modal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;
+}
+.modal-title{font-size:15px;font-weight:700;}
+.modal-close{
+  background:#f1f5f9;border:none;border-radius:50%;
+  width:30px;height:30px;font-size:15px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:var(--muted);
+}
+.fg{margin-bottom:11px;}
+.fl{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;display:block;}
+.fi,.fsel,.fta{
+  width:100%;padding:9px 12px;border:1.5px solid var(--border);
+  border-radius:10px;font-family:'IBM Plex Sans Arabic',sans-serif;
+  font-size:13px;direction:rtl;outline:none;
+  transition:border .2s;background:var(--bg);color:var(--text);
+}
+.fi:focus,.fsel:focus,.fta:focus{border-color:var(--btn);background:white;}
+.fta{resize:vertical;min-height:68px;}
+.sbtn{
+  width:100%;padding:12px;background:var(--btn);color:white;
+  border:none;border-radius:12px;font-family:'IBM Plex Sans Arabic',sans-serif;
+  font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;
+}
+.sbtn:active{background:var(--btn2);}
+.sbtn.red{background:var(--critical);}
+
+/* list edit */
+.edit-list{list-style:none;margin:6px 0;}
+.edit-list li{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:5px 8px;background:var(--bg);border-radius:7px;margin-bottom:4px;font-size:12px;
+}
+.rm-btn{background:none;border:none;color:var(--critical);cursor:pointer;font-size:15px;padding:0 4px;line-height:1;}
+.add-row{display:flex;gap:6px;margin-top:4px;}
+.add-row .fi{flex:1;}
+.add-row .add-btn{
+  padding:8px 12px;background:var(--btn);color:white;border:none;
+  border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;
+  font-family:'IBM Plex Sans Arabic',sans-serif;white-space:nowrap;
+}
+
+/* discharge confirm */
+.dis-box{background:var(--critical-bg);border:1.5px solid var(--critical-bd);border-radius:12px;padding:16px;text-align:center;}
+.dis-box p{font-size:13px;color:var(--critical);margin-bottom:14px;line-height:1.6;}
+.dis-btns{display:flex;gap:8px;}
+.cbtn{
+  flex:1;padding:11px;border-radius:10px;
+  font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;font-weight:700;
+  cursor:pointer;border:none;
+}
+.cbtn.yes{background:var(--critical);color:white;}
+.cbtn.no{background:white;color:var(--text);border:1.5px solid var(--border);}
+
+/* ward manage */
+.ward-manage-list{margin:8px 0;}
+.wm-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px;background:var(--bg);border-radius:10px;margin-bottom:6px;
+  border:1.5px solid var(--border);
+}
+.wm-item-info{flex:1;}
+.wm-name{font-size:13px;font-weight:700;}
+.wm-count{font-size:11px;color:var(--muted);margin-top:2px;}
+.wm-btns{display:flex;gap:6px;}
+.wm-btn{
+  background:white;border:1.5px solid var(--border);border-radius:7px;
+  padding:5px 9px;font-family:'IBM Plex Sans Arabic',sans-serif;
+  font-size:11px;font-weight:600;cursor:pointer;color:var(--text);
+}
+.wm-btn.del{color:var(--critical);border-color:var(--critical-bd);}
+.divider{border:none;border-top:1.5px solid var(--border);margin:14px 0;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-brand">
+    <div class="header-icon">🏥</div>
+    <div>
+      <div class="header-title">لوحة المرضى الاحترافية</div>
+      <div class="header-sub" id="hSub">جاري التحميل...</div>
+    </div>
+  </div>
+  <div class="header-time" id="hTime"></div>
+</div>
+
+<!-- WARD TABS -->
+<div class="ward-tabs-wrap" id="wardTabs"></div>
+
+<!-- STATS BAR -->
+<div class="stats-bar" id="statsBar"></div>
+
+<!-- SEARCH -->
+<div class="search-wrap">
+  <input class="search-input" type="text" placeholder="🔍  بحث عن مريض..." id="searchInput" oninput="render()">
+</div>
+
+<!-- SCROLL AREA -->
+<div class="scroll-area" id="scrollArea"></div>
+
+<!-- FAB -->
+<button class="fab" id="fabBtn" onclick="openModal('addPatient')">➕ إضافة مريض</button>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+// ═══════════════ STATE ═══════════════
+let db = loadDB();
+let currentWard = db.wards[0]?.id || null;
+let modalAction = null, modalTarget = null;
+
+function loadDB(){
+  const saved = localStorage.getItem('icu_db_v2');
+  if(saved) return JSON.parse(saved);
+  const w1 = uid(), w2 = uid(), w3 = uid();
+  return {
+    wards:[
+      {id:w1, name:'ردهة الإنعاش',    icon:'🫁', color:'#dc2626'},
+      {id:w2, name:'الردهة العامة',   icon:'🏥', color:'#1e40af'},
+      {id:w3, name:'العناية المركزة', icon:'💊', color:'#7c3aed'},
+    ],
+    patients:[
+      {id:uid(),wardId:w1,name:'أحمد كريم عبد',age:58,bed:'سرير 1',status:'critical',
+       admitDate:'2026-05-10',diagnosis:'فشل تنفسي حاد + ARDS',
+       tags:['على التنفس الصناعي','CRRT','CVP'],
+       symptoms:['PaO2/FiO2 < 100','BP 85/50 mmHg','حمى 39.5°C','GCS 8/15'],
+       recommendations:['Norepinephrine 0.3 mcg/kg/min','PEEP 12 cmH2O','ABG كل 4 ساعات','مزارع دم × 2']},
+      {id:uid(),wardId:w1,name:'سلمى عمر حسين',age:42,bed:'سرير 2',status:'watch',
+       admitDate:'2026-05-11',diagnosis:'تسمم باراسيتامول',
+       tags:['N-acetylcysteine','مراقبة كبدية'],
+       symptoms:['AST 1200 U/L','INR 2.1','غثيان متكرر'],
+       recommendations:['NAC بروتوكول 21 ساعة','INR كل 6 ساعات','استشارة كبد']},
+      {id:uid(),wardId:w1,name:'محمد زيد العبيدي',age:67,bed:'سرير 3',status:'stable',
+       admitDate:'2026-05-09',diagnosis:'STEMI — Post PCI',
+       tags:['Aspirin','Ticagrelor','Post-PCI'],
+       symptoms:['BP 130/80','SpO2 97%','Troponin نازل'],
+       recommendations:['Aspirin 100mg OD','Ticagrelor 90mg BD','Echo قبل التخريج']},
+      {id:uid(),wardId:w2,name:'نور حيدر علي',age:31,bed:'غرفة 5',status:'new-patient',
+       admitDate:'2026-05-12',diagnosis:'DKA حادة — سكري نوع 1',
+       tags:['Insulin infusion','K+ replacement'],
+       symptoms:['pH 7.18','Glucose 480 mg/dL','K+ 3.2 mEq/L'],
+       recommendations:['NS 1L/hr أول ساعتين','Insulin 0.1 u/kg/hr','K+ 20 mEq/كيس']},
+    ]
+  };
+}
+function save(){localStorage.setItem('icu_db_v2',JSON.stringify(db));}
+function uid(){return '_'+Math.random().toString(36).slice(2,9);}
+
+// ═══════════════ CLOCK ═══════════════
+function tick(){
+  const n=new Date();
+  document.getElementById('hTime').innerHTML=
+    n.toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'})+'<br>'+
+    n.toLocaleDateString('ar-IQ');
+}
+tick(); setInterval(tick,30000);
+
+// ═══════════════ TABS ═══════════════
+function renderTabs(){
+  const wrap=document.getElementById('wardTabs');
+  const pts=db.patients;
+  let html='';
+  db.wards.forEach(w=>{
+    const cnt=pts.filter(p=>p.wardId===w.id).length;
+    const active=w.id===currentWard?'active':'';
+    html+=`<button class="ward-tab ${active}" onclick="switchWard('${w.id}')">
+      <span>${w.icon}</span><span>${w.name}</span>
+      <span class="tab-count">${cnt}</span>
+    </button>`;
+  });
+  html+=`<button class="ward-tab-add" onclick="openModal('manageWards')" title="إدارة الردهات">⚙️</button>`;
+  wrap.innerHTML=html;
+  // scroll active tab into view
+  const active=wrap.querySelector('.ward-tab.active');
+  if(active) active.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+}
+
+function switchWard(id){
+  currentWard=id;
+  document.getElementById('searchInput').value='';
+  renderTabs();
+  render();
+}
+
+// ═══════════════ STATS ═══════════════
+function renderStats(){
+  const pts=db.patients.filter(p=>p.wardId===currentWard);
+  const c={critical:0,watch:0,stable:0,'new-patient':0};
+  pts.forEach(p=>{if(c[p.status]!==undefined)c[p.status]++;});
+  document.getElementById('statsBar').innerHTML=`
+    <span class="stat-chip cr"><span class="sdot"></span>حرج: ${c.critical}</span>
+    <span class="stat-chip wa"><span class="sdot"></span>مراقبة: ${c.watch}</span>
+    <span class="stat-chip np"><span class="sdot"></span>جديد: ${c['new-patient']}</span>
+    <span class="stat-chip st"><span class="sdot"></span>مستقر: ${c.stable}</span>
+    <span class="stat-chip to">المجموع: ${pts.length}</span>`;
+  const ward=db.wards.find(w=>w.id===currentWard);
+  document.getElementById('hSub').textContent=ward?ward.name:'—';
+}
+
+// ═══════════════ RENDER BOARD ═══════════════
+const statusLabel={critical:'حرج',watch:'مراقبة',stable:'مستقر','new-patient':'جديد'};
+const statusOrder={critical:0,watch:1,'new-patient':2,stable:3};
+
+function render(){
+  renderTabs(); renderStats();
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  const ward=db.wards.find(w=>w.id===currentWard);
+  const area=document.getElementById('scrollArea');
+
+  if(!ward){
+    area.innerHTML=`<div class="empty"><div class="empty-icon">🏥</div><p>لا توجد ردهات<br>اضغط ⚙️ لإضافة ردهة جديدة</p></div>`;
+    document.getElementById('fabBtn').style.display='none';
+    return;
+  }
+  document.getElementById('fabBtn').style.display='flex';
+
+  let pts=db.patients.filter(p=>p.wardId===currentWard);
+  if(q) pts=pts.filter(p=>
+    p.name.includes(q)||p.diagnosis.includes(q)||p.bed.includes(q)||
+    p.tags.some(t=>t.includes(q))
+  );
+  pts.sort((a,b)=>(statusOrder[a.status]??9)-(statusOrder[b.status]??9));
+
+  // Ward header
+  const cnt=db.patients.filter(p=>p.wardId===currentWard).length;
+  let html=`
+  <div class="ward-header-bar">
+    <div>
+      <div class="ward-name-display">${ward.icon} ${ward.name}</div>
+      <div class="ward-name-sub">${cnt} مريض — ${new Date().toLocaleDateString('ar-IQ')}</div>
+    </div>
+    <button class="ward-edit-btn" onclick="openModal('editWard','${ward.id}')">✏️ تعديل الردهة</button>
+  </div>`;
+
+  if(!pts.length){
+    html+=`<div class="empty"><div class="empty-icon">${q?'🔍':'🛏️'}</div><p>${q?'لا توجد نتائج':'لا يوجد مرضى في هذه الردهة'}</p></div>`;
+    area.innerHTML=html; return;
+  }
+
+  pts.forEach(p=>{
+    const admit=new Date(p.admitDate).toLocaleDateString('ar-IQ');
+    const tags=p.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+    const syms=p.symptoms.map(s=>`<li>${s}</li>`).join('');
+    const recs=p.recommendations.map(r=>`<li>${r}</li>`).join('');
+    html+=`
+    <div class="card ${p.status}" id="card-${p.id}">
+      <div class="card-header">
+        <div>
+          <div class="patient-name">${p.name}</div>
+          <div class="patient-meta">${p.age} سنة · ${p.bed} · ${admit}</div>
+        </div>
+        <span class="status-badge ${p.status}"><span class="sdot"></span>${statusLabel[p.status]}</span>
+      </div>
+      <div class="card-body">
+        <div class="diag-line">📋 ${p.diagnosis}</div>
+        <div class="tags-row">${tags}</div>
+        ${p.symptoms.length?`<div class="sec-title">⚠️ الأعراض والموجودات</div><ul class="items-ul sym">${syms}</ul>`:''}
+        ${p.recommendations.length?`<div class="sec-title">📌 التوصيات</div><ul class="items-ul rec">${recs}</ul>`:''}
+      </div>
+      <div class="card-actions">
+        <button class="act-btn pr" onclick="openModal('editSymptoms','${p.id}')">➕ أعراض</button>
+        <button class="act-btn pr" onclick="openModal('editRecs','${p.id}')">➕ توصية</button>
+        <button class="act-btn"    onclick="openModal('editPatient','${p.id}')">✏️ تعديل</button>
+        <button class="act-btn su" onclick="openModal('discharge','${p.id}')">🏠 تخريج</button>
+      </div>
+    </div>`;
+  });
+  area.innerHTML=html;
+}
+
+// ═══════════════ MODAL ═══════════════
+function openModal(action, target=null){
+  modalAction=action; modalTarget=target;
+  const modal=document.getElementById('modal');
+  modal.innerHTML=buildModal(action,target);
+  document.getElementById('overlay').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+  modalAction=null; modalTarget=null;
+}
+function overlayClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
+
+function buildModal(action,target){
+  const H=(t)=>`<div class="modal-head"><div class="modal-title">${t}</div><button class="modal-close" onclick="closeModal()">✕</button></div>`;
+
+  if(action==='addPatient'){
+    const wards=db.wards.map(w=>`<option value="${w.id}"${w.id===currentWard?' selected':''}>${w.icon} ${w.name}</option>`).join('');
+    return H('➕ إضافة مريض جديد')+`
+    <div class="fg"><label class="fl">الاسم الكامل</label><input class="fi" id="f_name" placeholder="اسم المريض"></div>
+    <div class="fg"><label class="fl">العمر</label><input class="fi" type="number" id="f_age" placeholder="بالسنوات"></div>
+    <div class="fg"><label class="fl">السرير / الغرفة</label><input class="fi" id="f_bed" placeholder="مثال: سرير 5"></div>
+    <div class="fg"><label class="fl">الردهة</label><select class="fsel" id="f_ward">${wards}</select></div>
+    <div class="fg"><label class="fl">التشخيص</label><input class="fi" id="f_diag" placeholder="التشخيص الرئيسي"></div>
+    <div class="fg"><label class="fl">الحالة</label>
+      <select class="fsel" id="f_status">
+        <option value="new-patient">🟣 جديد</option>
+        <option value="critical">🔴 حرج</option>
+        <option value="watch">🟡 مراقبة</option>
+        <option value="stable">🟢 مستقر</option>
+      </select></div>
+    <div class="fg"><label class="fl">الوسوم (مفصولة بفاصلة)</label><input class="fi" id="f_tags" placeholder="مثال: CVP, Insulin infusion"></div>
+    <div class="fg"><label class="fl">الأعراض (كل سطر = عرض)</label><textarea class="fta" id="f_syms" placeholder="BP 90/60&#10;Temp 39°C"></textarea></div>
+    <div class="fg"><label class="fl">التوصيات (كل سطر = توصية)</label><textarea class="fta" id="f_recs" placeholder="NS 500ml bolus&#10;مزارع دم"></textarea></div>
+    <button class="sbtn" onclick="doAddPatient()">✅ إضافة المريض</button>`;
+  }
+
+  if(action==='editPatient'){
+    const p=db.patients.find(x=>x.id===target);
+    const wards=db.wards.map(w=>`<option value="${w.id}"${w.id===p.wardId?' selected':''}>${w.icon} ${w.name}</option>`).join('');
+    return H(`✏️ تعديل — ${p.name}`)+`
+    <div class="fg"><label class="fl">الاسم</label><input class="fi" id="e_name" value="${p.name}"></div>
+    <div class="fg"><label class="fl">العمر</label><input class="fi" type="number" id="e_age" value="${p.age}"></div>
+    <div class="fg"><label class="fl">السرير</label><input class="fi" id="e_bed" value="${p.bed}"></div>
+    <div class="fg"><label class="fl">الردهة</label><select class="fsel" id="e_ward">${wards}</select></div>
+    <div class="fg"><label class="fl">التشخيص</label><input class="fi" id="e_diag" value="${p.diagnosis}"></div>
+    <div class="fg"><label class="fl">الحالة</label>
+      <select class="fsel" id="e_status">
+        <option value="critical"${p.status==='critical'?' selected':''}>🔴 حرج</option>
+        <option value="watch"${p.status==='watch'?' selected':''}>🟡 مراقبة</option>
+        <option value="stable"${p.status==='stable'?' selected':''}>🟢 مستقر</option>
+        <option value="new-patient"${p.status==='new-patient'?' selected':''}>🟣 جديد</option>
+      </select></div>
+    <div class="fg"><label class="fl">الوسوم (مفصولة بفاصلة)</label><input class="fi" id="e_tags" value="${p.tags.join(', ')}"></div>
+    <button class="sbtn" onclick="doEditPatient('${p.id}')">💾 حفظ التعديلات</button>`;
+  }
+
+  if(action==='editSymptoms'){
+    const p=db.patients.find(x=>x.id===target);
+    const items=p.symptoms.map((s,i)=>`<li>${s}<button class="rm-btn" onclick="removeItem('symptoms','${p.id}',${i})">✕</button></li>`).join('');
+    return H(`⚠️ أعراض — ${p.name}`)+`
+    <ul class="edit-list">${items||'<li style="color:var(--muted);font-size:12px;">لا توجد أعراض بعد</li>'}</ul>
+    <div class="add-row"><input class="fi" id="new_sym" placeholder="عرض أو موجودة جديدة..."><button class="add-btn" onclick="addItem('symptoms','${p.id}')">إضافة</button></div>`;
+  }
+
+  if(action==='editRecs'){
+    const p=db.patients.find(x=>x.id===target);
+    const items=p.recommendations.map((r,i)=>`<li>${r}<button class="rm-btn" onclick="removeItem('recommendations','${p.id}',${i})">✕</button></li>`).join('');
+    return H(`📌 توصيات — ${p.name}`)+`
+    <ul class="edit-list">${items||'<li style="color:var(--muted);font-size:12px;">لا توجد توصيات بعد</li>'}</ul>
+    <div class="add-row"><input class="fi" id="new_rec" placeholder="توصية أو أمر جديد..."><button class="add-btn" onclick="addItem('recommendations','${p.id}')">إضافة</button></div>`;
+  }
+
+  if(action==='discharge'){
+    const p=db.patients.find(x=>x.id===target);
+    return H('🏠 تخريج مريض')+`
+    <div class="dis-box">
+      <p>هل تريد تخريج المريض<br><strong>${p.name}</strong>؟<br><span style="font-size:11px">سيُحذف نهائياً من اللوحة</span></p>
+      <div class="dis-btns">
+        <button class="cbtn yes" onclick="doDischarge('${p.id}')">✅ تخريج</button>
+        <button class="cbtn no" onclick="closeModal()">إلغاء</button>
+      </div>
+    </div>`;
+  }
+
+  if(action==='manageWards'){
+    const list=db.wards.map(w=>{
+      const cnt=db.patients.filter(p=>p.wardId===w.id).length;
+      return `<div class="wm-item">
+        <div class="wm-item-info">
+          <div class="wm-name">${w.icon} ${w.name}</div>
+          <div class="wm-count">${cnt} مريض</div>
+        </div>
+        <div class="wm-btns">
+          <button class="wm-btn" onclick="openModal('editWard','${w.id}')">✏️</button>
+          ${cnt===0?`<button class="wm-btn del" onclick="doDeleteWard('${w.id}')">🗑️</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+    return H('⚙️ إدارة الردهات')+`
+    <div class="ward-manage-list">${list||'<p style="color:var(--muted);font-size:13px;text-align:center">لا توجد ردهات بعد</p>'}</div>
+    <hr class="divider">
+    <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px;">➕ إضافة ردهة جديدة</div>
+    <div class="fg"><label class="fl">اسم الردهة</label><input class="fi" id="nw_name" placeholder="مثال: ردهة الجراحة"></div>
+    <div class="fg"><label class="fl">الأيقونة (إيموجي)</label><input class="fi" id="nw_icon" placeholder="مثال: 🔬" style="font-size:18px"></div>
+    <button class="sbtn" onclick="doAddWard()">➕ إضافة الردهة</button>`;
+  }
+
+  if(action==='editWard'){
+    const w=db.wards.find(x=>x.id===target);
+    const cnt=db.patients.filter(p=>p.wardId===w.id).length;
+    return H(`✏️ تعديل: ${w.name}`)+`
+    <div class="fg"><label class="fl">اسم الردهة</label><input class="fi" id="ew_name" value="${w.name}"></div>
+    <div class="fg"><label class="fl">الأيقونة</label><input class="fi" id="ew_icon" value="${w.icon}" style="font-size:18px"></div>
+    <button class="sbtn" onclick="doEditWard('${w.id}')">💾 حفظ</button>
+    <hr class="divider">
+    ${cnt===0?`<button class="sbtn red" onclick="doDeleteWard('${w.id}')">🗑️ حذف هذه الردهة</button>`:'<p style="font-size:12px;color:var(--muted);text-align:center">لا يمكن حذف ردهة فيها مرضى</p>'}`;
+  }
+
+  return '';
+}
+
+// ═══════════════ ACTIONS ═══════════════
+function doAddPatient(){
+  const name=document.getElementById('f_name').value.trim();
+  const diag=document.getElementById('f_diag').value.trim();
+  if(!name||!diag){alert('الاسم والتشخيص مطلوبان');return;}
+  db.patients.push({
+    id:uid(),
+    wardId:document.getElementById('f_ward').value,
+    name, age:parseInt(document.getElementById('f_age').value)||0,
+    bed:document.getElementById('f_bed').value.trim()||'—',
+    status:document.getElementById('f_status').value,
+    admitDate:new Date().toISOString().split('T')[0],
+    diagnosis:diag,
+    tags:document.getElementById('f_tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    symptoms:document.getElementById('f_syms').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    recommendations:document.getElementById('f_recs').value.split('\n').map(r=>r.trim()).filter(Boolean),
+  });
+  save(); closeModal(); render();
+}
+
+function doEditPatient(id){
+  const p=db.patients.find(x=>x.id===id);
+  p.name=document.getElementById('e_name').value.trim()||p.name;
+  p.age=parseInt(document.getElementById('e_age').value)||p.age;
+  p.bed=document.getElementById('e_bed').value.trim()||p.bed;
+  p.wardId=document.getElementById('e_ward').value;
+  p.diagnosis=document.getElementById('e_diag').value.trim()||p.diagnosis;
+  p.status=document.getElementById('e_status').value;
+  p.tags=document.getElementById('e_tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  save(); closeModal();
+  currentWard=p.wardId; // follow patient if moved
+  render();
+}
+
+function removeItem(type,pid,idx){
+  const p=db.patients.find(x=>x.id===pid);
+  p[type].splice(idx,1);
+  save();
+  openModal(type==='symptoms'?'editSymptoms':'editRecs',pid);
+}
+
+function addItem(type,pid){
+  const inputId=type==='symptoms'?'new_sym':'new_rec';
+  const val=document.getElementById(inputId)?.value.trim();
+  if(!val)return;
+  const p=db.patients.find(x=>x.id===pid);
+  p[type].push(val);
+  save();
+  openModal(type==='symptoms'?'editSymptoms':'editRecs',pid);
+}
+
+function doDischarge(id){
+  db.patients=db.patients.filter(x=>x.id!==id);
+  save(); closeModal(); render();
+}
+
+function doAddWard(){
+  const name=document.getElementById('nw_name').value.trim();
+  const icon=document.getElementById('nw_icon').value.trim()||'🏥';
+  if(!name){alert('اسم الردهة مطلوب');return;}
+  const newId=uid();
+  db.wards.push({id:newId,name,icon,color:'#1e40af'});
+  save();
+  currentWard=newId;
+  closeModal(); render();
+}
+
+function doEditWard(id){
+  const w=db.wards.find(x=>x.id===id);
+  w.name=document.getElementById('ew_name').value.trim()||w.name;
+  w.icon=document.getElementById('ew_icon').value.trim()||w.icon;
+  save(); closeModal(); render();
+}
+
+function doDeleteWard(id){
+  if(!confirm('هل أنت متأكد من حذف هذه الردهة؟'))return;
+  db.wards=db.wards.filter(x=>x.id!==id);
+  db.patients=db.patients.filter(x=>x.wardId!==id);
+  if(currentWard===id) currentWard=db.wards[0]?.id||null;
+  save(); closeModal(); render();
+}
+
+// ═══════════════ PWA ═══════════════
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+// ═══════════════ INIT ═══════════════
+render();
+</script>
+</body>
+</html>
