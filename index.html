@@ -4,832 +4,409 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="ICU Board">
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>لوحة المرضى الاحترافية</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>لوحة المرضى</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --critical:#dc2626; --critical-bg:#fff1f1; --critical-bd:#fca5a5;
-  --watch:#d97706;    --watch-bg:#fffbeb;    --watch-bd:#fcd34d;
-  --stable:#16a34a;   --stable-bg:#f0fdf4;   --stable-bd:#86efac;
-  --new:#7c3aed;      --new-bg:#faf5ff;      --new-bd:#c4b5fd;
-  --accent:#0f172a;   --mid:#1e293b;
-  --btn:#1e40af;      --btn2:#1d4ed8;
-  --bg:#f0f4f8;       --card:#ffffff;
-  --text:#1e293b;     --muted:#64748b;       --border:#e2e8f0;
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bot: env(safe-area-inset-bottom, 0px);
+:root{
+  --cr:#e53e3e;--cr-bg:#fff5f5;--cr-bd:#feb2b2;
+  --wa:#d69e2e;--wa-bg:#fffff0;--wa-bd:#f6e05e;
+  --st:#38a169;--st-bg:#f0fff4;--st-bd:#9ae6b4;
+  --nw:#805ad5;--nw-bg:#faf5ff;--nw-bd:#d6bcfa;
+  --text:#1a202c;--muted:#718096;--border:#e2e8f0;
+  --bg:#f7f8fa;--card:#fff;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;}
-body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--text);direction:rtl;display:flex;flex-direction:column;}
-
-/* LOGIN SCREEN */
-.login-screen{
-  position:fixed;inset:0;background:var(--accent);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  z-index:1000;padding:24px;
-}
-.login-logo{font-size:52px;margin-bottom:16px;}
-.login-title{font-size:20px;font-weight:700;color:white;margin-bottom:6px;}
-.login-sub{font-size:13px;color:#94a3b8;margin-bottom:32px;text-align:center;}
-.login-card{background:#1e293b;border-radius:18px;padding:24px;width:100%;max-width:360px;}
-.login-label{font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:6px;display:block;}
-.login-input{
-  width:100%;padding:12px 14px;background:#0f172a;border:1.5px solid #334155;
-  border-radius:10px;font-family:'IBM Plex Sans Arabic',sans-serif;
-  font-size:14px;color:white;direction:rtl;outline:none;margin-bottom:16px;
-}
-.login-input:focus{border-color:#3b82f6;}
-.login-btn{
-  width:100%;padding:13px;background:#1e40af;color:white;border:none;
-  border-radius:12px;font-family:'IBM Plex Sans Arabic',sans-serif;
-  font-size:15px;font-weight:700;cursor:pointer;
-}
-.login-btn:active{background:#1d4ed8;}
-
-/* HEADER */
-.header{
-  background:var(--accent);color:white;
-  padding:calc(var(--safe-top) + 10px) 14px 10px;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;z-index:50;box-shadow:0 2px 12px rgba(0,0,0,.3);
-}
-.header-brand{display:flex;align-items:center;gap:9px;}
-.header-icon{width:34px;height:34px;background:#1e40af;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
-.header-title{font-size:15px;font-weight:700;}
-.header-sub{font-size:10px;color:#94a3b8;margin-top:1px;}
-.header-left{display:flex;align-items:center;gap:8px;}
-.header-time{font-size:11px;color:#94a3b8;text-align:left;line-height:1.5;}
-.user-badge{
-  background:#1e293b;border-radius:20px;padding:4px 10px;
-  font-size:11px;font-weight:600;color:#94a3b8;
-  display:flex;align-items:center;gap:5px;cursor:pointer;
-}
-.user-badge span{color:white;}
-
-/* WARD TABS */
-.ward-tabs-wrap{background:var(--mid);flex-shrink:0;overflow-x:auto;display:flex;align-items:stretch;border-bottom:1px solid #334155;scrollbar-width:none;}
-.ward-tabs-wrap::-webkit-scrollbar{display:none;}
-.ward-tab{
-  font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;font-weight:600;
-  padding:10px 14px;background:none;border:none;color:#94a3b8;
-  cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;
-  transition:all .18s;flex-shrink:0;display:flex;align-items:center;gap:6px;
-}
-.ward-tab.active{color:white;border-bottom-color:#3b82f6;}
-.ward-tab .tab-count{font-size:10px;font-weight:700;background:#334155;color:#94a3b8;padding:1px 6px;border-radius:10px;}
-.ward-tab.active .tab-count{background:#1e40af;color:white;}
-.ward-tab-add{font-family:'IBM Plex Sans Arabic',sans-serif;padding:10px 12px;background:none;border:none;color:#3b82f6;cursor:pointer;font-size:18px;flex-shrink:0;display:flex;align-items:center;}
-
-/* STATS BAR */
-.stats-bar{display:flex;gap:6px;padding:8px 12px;overflow-x:auto;background:white;border-bottom:1px solid var(--border);flex-shrink:0;scrollbar-width:none;}
-.stats-bar::-webkit-scrollbar{display:none;}
-.stat-chip{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap;flex-shrink:0;}
-.stat-chip.cr{background:var(--critical-bg);color:var(--critical);}
-.stat-chip.wa{background:var(--watch-bg);color:var(--watch);}
-.stat-chip.st{background:var(--stable-bg);color:var(--stable);}
-.stat-chip.np{background:var(--new-bg);color:var(--new);}
-.stat-chip.to{background:#f1f5f9;color:#475569;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.sdot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1.4s infinite;}
-
-/* SEARCH */
-.search-wrap{padding:8px 12px;background:white;border-bottom:1px solid var(--border);flex-shrink:0;}
-.search-input{width:100%;padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;direction:rtl;outline:none;transition:border .2s;background:var(--bg);}
-.search-input:focus{border-color:var(--btn);background:white;}
-
-/* BOTTOM TABS */
-.bottom-tabs{
-  display:flex;background:var(--accent);
-  border-top:1px solid #1e293b;
-  padding-bottom:var(--safe-bot);flex-shrink:0;
-}
-.btab{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  padding:10px 4px 8px;background:none;border:none;
-  font-family:'IBM Plex Sans Arabic',sans-serif;font-size:10px;
-  color:#64748b;cursor:pointer;gap:4px;transition:color .15s;
-}
-.btab.active{color:#3b82f6;}
-.btab-icon{font-size:20px;}
-
-/* SCROLL AREA */
-.scroll-area{flex:1;overflow-y:auto;padding:10px 12px 10px;}
-.scroll-area::-webkit-scrollbar{width:3px;}
-.scroll-area::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px;}
-
-/* LOADING */
-.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;color:var(--muted);}
-.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--btn);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px;}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* WARD HEADER */
-.ward-header-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:10px 12px;background:var(--card);border-radius:12px;border:1.5px solid var(--border);}
-.ward-name-display{font-size:15px;font-weight:700;}
-.ward-name-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-.ward-edit-btn{background:#f1f5f9;border:none;border-radius:8px;padding:6px 11px;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;}
-
-/* PATIENT CARD */
-.card{background:var(--card);border-radius:14px;margin-bottom:10px;border:1.5px solid var(--border);overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.04);transition:box-shadow .2s;}
-.card.critical{border-color:var(--critical-bd);}
-.card.watch{border-color:var(--watch-bd);}
-.card.stable{border-color:var(--stable-bd);}
-.card.new-patient{border-color:var(--new-bd);}
-.card-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 8px;border-bottom:1px solid var(--border);position:relative;}
-.card-header::after{content:'';position:absolute;right:0;top:0;bottom:0;width:4px;border-radius:0 4px 4px 0;}
-.card.critical .card-header::after{background:var(--critical);}
-.card.watch    .card-header::after{background:var(--watch);}
-.card.stable   .card-header::after{background:var(--stable);}
-.card.new-patient .card-header::after{background:var(--new);}
-.patient-name{font-size:14px;font-weight:700;}
-.patient-meta{font-size:11px;color:var(--muted);margin-top:2px;}
-.status-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;display:flex;align-items:center;gap:4px;flex-shrink:0;}
-.status-badge.critical{background:var(--critical-bg);color:var(--critical);}
-.status-badge.watch{background:var(--watch-bg);color:var(--watch);}
-.status-badge.stable{background:var(--stable-bg);color:var(--stable);}
-.status-badge.new-patient{background:var(--new-bg);color:var(--new);}
-.card-body{padding:10px 12px;}
-.diag-line{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;}
-.tags-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
-.tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:6px;background:#f1f5f9;color:var(--muted);border:1px solid var(--border);}
-.sec-title{font-size:10px;font-weight:700;color:var(--muted);margin:8px 0 4px;}
-.items-ul{list-style:none;}
-.items-ul li{font-size:12px;padding:3px 0;border-bottom:1px solid #f8fafc;display:flex;align-items:flex-start;gap:5px;}
-.items-ul.sym li::before{content:'•';color:var(--critical);font-weight:700;flex-shrink:0;}
-.items-ul.rec li::before{content:'→';color:var(--btn);font-weight:700;flex-shrink:0;}
-.card-actions{display:flex;gap:5px;padding:8px 10px;border-top:1px solid var(--border);background:#fafbfc;flex-wrap:wrap;}
-.act-btn{font-family:'IBM Plex Sans Arabic',sans-serif;font-size:11px;font-weight:600;padding:5px 9px;border-radius:8px;border:1.5px solid var(--border);background:white;color:var(--text);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:3px;}
-.act-btn:active{transform:scale(.96);}
-.act-btn.pr{color:var(--btn);border-color:#bfdbfe;}
-.act-btn.su{color:var(--stable);border-color:var(--stable-bd);}
-.act-btn.da{color:var(--critical);border-color:var(--critical-bd);}
-
-/* FAB */
-.fab{position:fixed;bottom:calc(var(--safe-bot) + 62px);left:16px;background:var(--btn);color:white;border:none;border-radius:50px;padding:13px 20px;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(30,64,175,.45);z-index:100;display:flex;align-items:center;gap:7px;}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);direction:rtl;display:flex;flex-direction:column;}
+.login{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;padding:28px 24px;}
+.login-logo{width:64px;height:64px;background:#1a202c;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:20px;}
+.login-title{font-size:22px;font-weight:800;margin-bottom:4px;}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:32px;}
+.lcard{width:100%;max-width:340px;}
+.lbl{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;display:block;letter-spacing:.5px;}
+.linput{width:100%;padding:12px 14px;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;color:var(--text);direction:rtl;outline:none;margin-bottom:14px;transition:border .2s;}
+.linput:focus{border-color:#1a202c;background:#fff;}
+.lbtn{width:100%;padding:14px;background:#1a202c;color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:16px;font-weight:700;cursor:pointer;}
+.lbtn:active{opacity:.85;}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:calc(var(--safe-top)+10px) 16px 0;flex-shrink:0;}
+.trow{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.app-title{font-size:17px;font-weight:800;}
+.tright{display:flex;align-items:center;gap:10px;}
+.clock{font-size:11px;color:var(--muted);line-height:1.5;text-align:left;}
+.upill{display:flex;align-items:center;gap:5px;background:var(--bg);border-radius:20px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);}
+.ward-tabs{display:flex;overflow-x:auto;scrollbar-width:none;}
+.ward-tabs::-webkit-scrollbar{display:none;}
+.wtab{font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;padding:9px 14px;background:none;border:none;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:2.5px solid transparent;flex-shrink:0;display:flex;align-items:center;gap:5px;transition:all .15s;}
+.wtab.active{color:var(--text);border-bottom-color:#1a202c;}
+.wcount{font-size:10px;font-weight:800;padding:1px 6px;border-radius:20px;background:var(--bg);color:var(--muted);}
+.wtab.active .wcount{background:#1a202c;color:#fff;}
+.wtab-add{padding:9px 12px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;flex-shrink:0;}
+.stats-row{display:flex;gap:8px;padding:10px 16px;background:#fff;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+.stats-row::-webkit-scrollbar{display:none;}
+.scard{display:flex;flex-direction:column;align-items:center;background:var(--bg);border-radius:10px;padding:7px 14px;flex-shrink:0;min-width:58px;border:1px solid var(--border);}
+.snum{font-size:20px;font-weight:800;line-height:1;}
+.slbl{font-size:10px;font-weight:600;color:var(--muted);margin-top:2px;}
+.scard.cr .snum{color:var(--cr);}
+.scard.wa .snum{color:var(--wa);}
+.scard.st .snum{color:var(--st);}
+.scard.nw .snum{color:var(--nw);}
+.search-wrap{padding:10px 16px;background:#fff;border-bottom:1px solid var(--border);flex-shrink:0;}
+.sbox{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:8px 14px;}
+.sbox input{flex:1;border:none;background:none;outline:none;font-family:'Tajawal',sans-serif;font-size:14px;color:var(--text);direction:rtl;}
+.scroll{flex:1;overflow-y:auto;padding:12px 16px calc(var(--safe-bot)+80px);}
+.scroll::-webkit-scrollbar{width:3px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.ward-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.wname{font-size:18px;font-weight:800;}
+.wsub{font-size:12px;color:var(--muted);margin-top:2px;}
+.wedit{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
+.pcard{background:#fff;border-radius:16px;border:1px solid var(--border);margin-bottom:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.pcard.critical{border-right:4px solid var(--cr);}
+.pcard.watch{border-right:4px solid var(--wa);}
+.pcard.stable{border-right:4px solid var(--st);}
+.pcard.new-patient{border-right:4px solid var(--nw);}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;padding:12px 14px 6px;}
+.pname{font-size:15px;font-weight:800;}
+.pmeta{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.6;}
+.sbadge{font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;flex-shrink:0;}
+.sbadge.critical{background:var(--cr-bg);color:var(--cr);}
+.sbadge.watch{background:var(--wa-bg);color:var(--wa);}
+.sbadge.stable{background:var(--st-bg);color:var(--st);}
+.sbadge.new-patient{background:var(--nw-bg);color:var(--nw);}
+.pb{padding:0 14px 10px;}
+.pdiag{font-size:13px;font-weight:700;background:var(--bg);border-radius:8px;padding:7px 10px;margin-bottom:8px;}
+.ptags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
+.ptag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+.psec{font-size:10px;font-weight:800;color:var(--muted);margin:8px 0 4px;letter-spacing:.5px;text-transform:uppercase;}
+.plist{list-style:none;}
+.plist li{font-size:13px;padding:4px 0;display:flex;align-items:flex-start;gap:7px;border-bottom:1px solid #f7f8fa;}
+.plist li:last-child{border:none;}
+.plist.sym li::before{content:'●';font-size:7px;color:var(--cr);margin-top:5px;flex-shrink:0;}
+.plist.rec li::before{content:'→';color:#3182ce;flex-shrink:0;}
+.pfoot{display:flex;gap:6px;padding:8px 14px 10px;border-top:1px solid var(--bg);flex-wrap:wrap;}
+.pact{font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;padding:6px 12px;border-radius:9px;border:1.5px solid var(--border);background:#fff;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:4px;}
+.pact:active{transform:scale(.95);}
+.pact.bl{color:#3182ce;border-color:#bee3f8;}
+.pact.gr{color:var(--st);border-color:var(--st-bd);}
+.fab{position:fixed;bottom:calc(var(--safe-bot)+16px);left:16px;background:#1a202c;color:#fff;border:none;border-radius:50px;padding:14px 22px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.18);z-index:100;display:flex;align-items:center;gap:8px;}
 .fab:active{transform:scale(.96);}
-
-/* EMPTY */
-.empty{text-align:center;padding:40px 20px;color:var(--muted);}
-.empty-icon{font-size:40px;margin-bottom:10px;}
-.empty p{font-size:13px;}
-
-/* AUDIT LOG */
-.audit-item{background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px;border:1.5px solid var(--border);}
-.audit-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-.audit-user{font-size:12px;font-weight:700;color:var(--btn);display:flex;align-items:center;gap:5px;}
-.audit-time{font-size:10px;color:var(--muted);}
-.audit-action{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:#f1f5f9;color:var(--muted);margin-bottom:5px;display:inline-block;}
-.audit-details{font-size:12px;color:var(--text);line-height:1.5;}
-
-/* MODAL */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s;}
+.empty{text-align:center;padding:48px 20px;color:var(--muted);}
+.ei{font-size:44px;margin-bottom:12px;}
+.empty p{font-size:14px;font-weight:500;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:28px;height:28px;border:2.5px solid var(--border);border-top-color:#1a202c;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;}
+.audit-item{background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:8px;border:1px solid var(--border);}
+.at{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.auser{font-size:13px;font-weight:800;}
+.atime{font-size:11px;color:var(--muted);}
+.atag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--bg);color:var(--muted);border:1px solid var(--border);margin-bottom:5px;}
+.adet{font-size:13px;line-height:1.5;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
 .overlay.open{opacity:1;pointer-events:all;}
-.modal{background:white;border-radius:22px 22px 0 0;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;padding:20px 16px calc(var(--safe-bot) + 28px);transform:translateY(40px);transition:transform .25s;}
+.modal{background:#fff;border-radius:22px 22px 0 0;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;padding:22px 18px calc(var(--safe-bot)+28px);transform:translateY(40px);transition:transform .22s;}
 .overlay.open .modal{transform:translateY(0);}
 .modal::-webkit-scrollbar{display:none;}
-.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.modal-title{font-size:15px;font-weight:700;}
-.modal-close{background:#f1f5f9;border:none;border-radius:50%;width:30px;height:30px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);}
-.fg{margin-bottom:11px;}
-.fl{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;display:block;}
-.fi,.fsel,.fta{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;direction:rtl;outline:none;transition:border .2s;background:var(--bg);color:var(--text);}
-.fi:focus,.fsel:focus,.fta:focus{border-color:var(--btn);background:white;}
-.fta{resize:vertical;min-height:68px;}
-.sbtn{width:100%;padding:12px;background:var(--btn);color:white;border:none;border-radius:12px;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;}
-.sbtn:active{background:var(--btn2);}
-.sbtn.red{background:var(--critical);}
-.edit-list{list-style:none;margin:6px 0;}
-.edit-list li{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:var(--bg);border-radius:7px;margin-bottom:4px;font-size:12px;}
-.rm-btn{background:none;border:none;color:var(--critical);cursor:pointer;font-size:15px;padding:0 4px;line-height:1;}
-.add-row{display:flex;gap:6px;margin-top:4px;}
-.add-row .fi{flex:1;}
-.add-row .add-btn{padding:8px 12px;background:var(--btn);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;white-space:nowrap;}
-.dis-box{background:var(--critical-bg);border:1.5px solid var(--critical-bd);border-radius:12px;padding:16px;text-align:center;}
-.dis-box p{font-size:13px;color:var(--critical);margin-bottom:14px;line-height:1.6;}
-.dis-btns{display:flex;gap:8px;}
-.cbtn{flex:1;padding:11px;border-radius:10px;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;}
-.cbtn.yes{background:var(--critical);color:white;}
-.cbtn.no{background:white;color:var(--text);border:1.5px solid var(--border);}
-.wm-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px;margin-bottom:6px;border:1.5px solid var(--border);}
-.wm-item-info{flex:1;}
-.wm-name{font-size:13px;font-weight:700;}
-.wm-count{font-size:11px;color:var(--muted);margin-top:2px;}
-.wm-btns{display:flex;gap:6px;}
-.wm-btn{background:white;border:1.5px solid var(--border);border-radius:7px;padding:5px 9px;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:11px;font-weight:600;cursor:pointer;color:var(--text);}
-.wm-btn.del{color:var(--critical);border-color:var(--critical-bd);}
-.divider{border:none;border-top:1.5px solid var(--border);margin:14px 0;}
-.toast{position:fixed;bottom:calc(var(--safe-bot) + 70px);left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;color:white;padding:10px 18px;border-radius:20px;font-size:12px;font-weight:600;z-index:500;opacity:0;transition:all .3s;white-space:nowrap;}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.mt{font-size:16px;font-weight:800;}
+.mc{background:var(--bg);border:1px solid var(--border);border-radius:50%;width:30px;height:30px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);}
+.fg{margin-bottom:12px;}
+.fl{font-size:11px;font-weight:800;color:var(--muted);margin-bottom:5px;display:block;letter-spacing:.3px;}
+.fi,.fsel,.fta{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:11px;font-family:'Tajawal',sans-serif;font-size:14px;direction:rtl;outline:none;background:var(--bg);color:var(--text);transition:border .2s;}
+.fi:focus,.fsel:focus,.fta:focus{border-color:#1a202c;background:#fff;}
+.fta{resize:vertical;min-height:72px;}
+.sbtn{width:100%;padding:13px;background:#1a202c;color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:10px;}
+.sbtn.red{background:var(--cr);}
+.elist{list-style:none;margin:6px 0;}
+.elist li{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--bg);border-radius:9px;margin-bottom:5px;font-size:13px;}
+.rm{background:none;border:none;color:var(--cr);cursor:pointer;font-size:16px;padding:0 4px;}
+.arow{display:flex;gap:6px;margin-top:6px;}
+.arow .fi{flex:1;}
+.abtn{padding:9px 14px;background:#1a202c;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;white-space:nowrap;}
+.dbox{background:var(--cr-bg);border:1.5px solid var(--cr-bd);border-radius:14px;padding:18px;text-align:center;}
+.dbox p{font-size:14px;color:var(--cr);margin-bottom:14px;line-height:1.6;font-weight:600;}
+.dbtns{display:flex;gap:8px;}
+.cbtn{flex:1;padding:12px;border-radius:11px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;}
+.cbtn.yes{background:var(--cr);color:#fff;}
+.cbtn.no{background:#fff;color:var(--text);border:1.5px solid var(--border);}
+.wmi{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:var(--bg);border-radius:11px;margin-bottom:6px;border:1px solid var(--border);}
+.wmi-n{font-size:14px;font-weight:700;}
+.wmi-c{font-size:11px;color:var(--muted);margin-top:2px;}
+.wmi-b{display:flex;gap:6px;}
+.wmb{background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+.wmb.del{color:var(--cr);border-color:var(--cr-bd);}
+.div{border:none;border-top:1px solid var(--border);margin:16px 0;}
+.toast{position:fixed;bottom:calc(var(--safe-bot)+84px);left:50%;transform:translateX(-50%) translateY(16px);background:#1a202c;color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;font-weight:700;z-index:500;opacity:0;transition:all .25s;white-space:nowrap;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1.4s infinite;display:inline-block;margin-left:3px;}
 </style>
 </head>
 <body>
-
-<!-- LOGIN -->
-<div class="login-screen" id="loginScreen">
+<div class="login" id="LS">
   <div class="login-logo">🏥</div>
-  <div class="login-title">لوحة المرضى الاحترافية</div>
-  <div class="login-sub">سجّل دخولك — كل تعديل يُسجَّل باسمك</div>
-  <div class="login-card">
-    <label class="login-label">اسمك الكامل</label>
-    <input class="login-input" id="loginName" placeholder="د. علي زهير" type="text">
-    <label class="login-label">تخصصك / دورك</label>
-    <input class="login-input" id="loginRole" placeholder="طبيب مقيم — طوارئ" type="text">
-    <button class="login-btn" onclick="doLogin()">دخول ←</button>
+  <div class="login-title">لوحة المرضى</div>
+  <div class="login-sub">سجّل دخولك — كل تعديل يُحفظ باسمك</div>
+  <div class="lcard">
+    <label class="lbl">الاسم الكامل</label>
+    <input class="linput" id="lN" placeholder="د. علي زهير" type="text">
+    <label class="lbl">التخصص / الدور</label>
+    <input class="linput" id="lR" placeholder="طبيب مقيم — طوارئ" type="text">
+    <button class="lbtn" onclick="doLogin()">دخول</button>
   </div>
 </div>
-
-<!-- HEADER -->
-<div class="header" id="mainHeader" style="display:none">
-  <div class="header-brand">
-    <div class="header-icon">🏥</div>
-    <div>
-      <div class="header-title">لوحة المرضى</div>
-      <div class="header-sub" id="hSub">—</div>
+<div class="topbar" id="TB" style="display:none">
+  <div class="trow">
+    <div class="app-title">🏥 لوحة المرضى</div>
+    <div class="tright">
+      <div class="clock" id="CL"></div>
+      <div class="upill" onclick="logout()">👤 <span id="UN"></span></div>
     </div>
   </div>
-  <div class="header-left">
-    <div class="header-time" id="hTime"></div>
-    <div class="user-badge" onclick="logout()">👤 <span id="userNameBadge"></span></div>
-  </div>
+  <div class="ward-tabs" id="WT"></div>
 </div>
-
-<!-- WARD TABS -->
-<div class="ward-tabs-wrap" id="wardTabs" style="display:none"></div>
-
-<!-- STATS BAR -->
-<div class="stats-bar" id="statsBar" style="display:none"></div>
-
-<!-- SEARCH -->
-<div class="search-wrap" id="searchWrap" style="display:none">
-  <input class="search-input" type="text" placeholder="🔍  بحث عن مريض..." id="searchInput" oninput="renderBoard()">
+<div class="stats-row" id="SR" style="display:none"></div>
+<div class="search-wrap" id="SW" style="display:none">
+  <div class="sbox"><span>🔍</span><input type="text" id="SI" placeholder="بحث..." oninput="renderBoard()"></div>
 </div>
-
-<!-- SCROLL AREA -->
-<div class="scroll-area" id="scrollArea" style="display:none"></div>
-
-<!-- BOTTOM TABS -->
-<div class="bottom-tabs" id="bottomTabs" style="display:none">
-  <button class="btab active" id="tab-board" onclick="switchTab('board')">
-    <span class="btab-icon">🏥</span>المرضى
-  </button>
-  <button class="btab" id="tab-audit" onclick="switchTab('audit')">
-    <span class="btab-icon">📋</span>سجل التعديلات
-  </button>
-</div>
-
-<!-- FAB -->
-<button class="fab" id="fabBtn" onclick="openModal('addPatient')" style="display:none">➕ إضافة مريض</button>
-
-<!-- MODAL -->
-<div class="overlay" id="overlay" onclick="overlayClick(event)">
-  <div class="modal" id="modal"></div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
+<div class="scroll" id="SC" style="display:none"></div>
+<button class="fab" id="FB" onclick="openModal('addPatient')" style="display:none">＋ إضافة مريض</button>
+<div class="overlay" id="OV" onclick="ovc(event)"><div class="modal" id="MD"></div></div>
+<div class="toast" id="TS"></div>
 <script>
-// ══════════════════════════════════════
-// SUPABASE CONFIG
-// ══════════════════════════════════════
-const SUPABASE_URL = 'https://mcuggyiudkcnqtpxnnyj.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_rqLOSR8WRKtCSYUoHQmxpA_IjDfZagz';
-
-const headers = {
-  'Content-Type': 'application/json',
-  'apikey': SUPABASE_KEY,
-  'Authorization': `Bearer ${SUPABASE_KEY}`,
-  'Prefer': 'return=representation'
-};
-
-async function sb(method, table, data=null, query=''){
-  const url = `${SUPABASE_URL}/rest/v1/${table}${query}`;
-  const opts = { method, headers };
-  if(data) opts.body = JSON.stringify(data);
-  const res = await fetch(url, opts);
-  if(!res.ok){ const err=await res.text(); throw new Error(err); }
-  const text = await res.text();
-  return text ? JSON.parse(text) : [];
+const SU='https://mcuggyiudkcnqtpxnnyj.supabase.co';
+const SK='sb_publishable_rqLOSR8WRKtCSYUoHQmxpA_IjDfZagz';
+const SH={'Content-Type':'application/json','apikey':SK,'Authorization':'Bearer '+SK,'Prefer':'return=representation'};
+async function sb(m,t,d,q=''){
+  const r=await fetch(SU+'/rest/v1/'+t+q,{method:m,headers:SH,body:d?JSON.stringify(d):undefined});
+  const tx=await r.text();return tx?JSON.parse(tx):[];
 }
-
-// ══════════════════════════════════════
-// STATE
-// ══════════════════════════════════════
-let currentUser = JSON.parse(localStorage.getItem('icu_user') || 'null');
-let currentWard = null;
-let wards = [];
-let patients = [];
-let currentTab = 'board';
-let modalAction = null, modalTarget = null;
-
-const statusLabel = {critical:'حرج',watch:'مراقبة',stable:'مستقر','new-patient':'جديد'};
-const statusOrder = {critical:0,watch:1,'new-patient':2,stable:3};
-const actionLabel = {
-  'add_patient':'إضافة مريض','edit_patient':'تعديل مريض',
-  'discharge':'تخريج مريض','add_symptom':'إضافة عرض',
-  'remove_symptom':'حذف عرض','add_rec':'إضافة توصية',
-  'remove_rec':'حذف توصية','add_ward':'إضافة ردهة',
-  'edit_ward':'تعديل ردهة','delete_ward':'حذف ردهة'
-};
-
-// ══════════════════════════════════════
-// LOGIN
-// ══════════════════════════════════════
+let user=JSON.parse(localStorage.getItem('icu_user')||'null');
+let wards=[],patients=[],CW=null,CV='board',MA=null,MT=null;
+const SL={critical:'حرج',watch:'مراقبة',stable:'مستقر','new-patient':'جديد'};
+const SO={critical:0,watch:1,'new-patient':2,stable:3};
+const AL={add_patient:'إضافة مريض',edit_patient:'تعديل مريض',discharge:'تخريج',add_symptom:'إضافة عرض',remove_symptom:'حذف عرض',add_rec:'إضافة توصية',remove_rec:'حذف توصية',add_ward:'إضافة ردهة',edit_ward:'تعديل ردهة',delete_ward:'حذف ردهة'};
 function doLogin(){
-  const name = document.getElementById('loginName').value.trim();
-  const role = document.getElementById('loginRole').value.trim();
-  if(!name){ alert('الاسم مطلوب'); return; }
-  currentUser = { name, role };
-  localStorage.setItem('icu_user', JSON.stringify(currentUser));
-  showApp();
+  const n=document.getElementById('lN').value.trim();
+  if(!n){alert('الاسم مطلوب');return;}
+  user={name:n,role:document.getElementById('lR').value.trim()};
+  localStorage.setItem('icu_user',JSON.stringify(user));showApp();
 }
-
-function logout(){
-  if(!confirm('تريد تسجيل الخروج؟')) return;
-  localStorage.removeItem('icu_user');
-  currentUser = null;
-  location.reload();
-}
-
+function logout(){if(confirm('تسجيل الخروج؟')){localStorage.removeItem('icu_user');location.reload();}}
 function showApp(){
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('mainHeader').style.display = 'flex';
-  document.getElementById('wardTabs').style.display = 'flex';
-  document.getElementById('statsBar').style.display = 'flex';
-  document.getElementById('searchWrap').style.display = 'block';
-  document.getElementById('scrollArea').style.display = 'block';
-  document.getElementById('bottomTabs').style.display = 'flex';
-  document.getElementById('fabBtn').style.display = 'flex';
-  document.getElementById('userNameBadge').textContent = currentUser.name;
-  tick(); setInterval(tick, 30000);
-  loadData();
+  document.getElementById('LS').style.display='none';
+  ['TB','SR','SW','SC','FB'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.style.display=id==='TB'?'block':id==='SR'||id==='SW'?'flex':'block';
+  });
+  document.getElementById('UN').textContent=user.name;
+  tick();setInterval(tick,30000);loadData();
 }
-
-// ══════════════════════════════════════
-// AUDIT LOG
-// ══════════════════════════════════════
-async function log(action, details){
-  try {
-    await sb('POST', 'audit_log', {
-      user_name: currentUser.name,
-      action, details
-    });
-  } catch(e){ console.warn('audit log failed', e); }
-}
-
-// ══════════════════════════════════════
-// DATA LOADING
-// ══════════════════════════════════════
-async function loadData(){
-  showLoading();
-  try {
-    wards = await sb('GET', 'wards', null, '?order=created_at.asc');
-    patients = await sb('GET', 'patients', null, '?order=created_at.asc');
-    if(wards.length === 0) await seedDefaults();
-    if(!currentWard && wards.length) currentWard = wards[0].id;
-    renderAll();
-  } catch(e){
-    document.getElementById('scrollArea').innerHTML =
-      `<div class="empty"><div class="empty-icon">⚠️</div><p>خطأ في الاتصال<br>${e.message}</p></div>`;
-  }
-}
-
-async function seedDefaults(){
-  const w1 = await sb('POST','wards',{id:uid(),name:'ردهة الإنعاش',icon:'🫁'});
-  const w2 = await sb('POST','wards',{id:uid(),name:'الردهة العامة',icon:'🏥'});
-  wards = [w1[0], w2[0]];
-}
-
-function showLoading(){
-  document.getElementById('scrollArea').innerHTML =
-    `<div class="loading"><div class="spinner"></div><p>جاري التحميل...</p></div>`;
-}
-
-function uid(){ return '_'+Math.random().toString(36).slice(2,9); }
-
-// ══════════════════════════════════════
-// CLOCK
-// ══════════════════════════════════════
 function tick(){
   const n=new Date();
-  document.getElementById('hTime').innerHTML=
-    n.toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'})+'<br>'+
-    n.toLocaleDateString('ar-IQ');
+  document.getElementById('CL').innerHTML=n.toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'})+'<br>'+n.toLocaleDateString('ar-IQ');
 }
-
-// ══════════════════════════════════════
-// TABS
-// ══════════════════════════════════════
-function switchTab(tab){
-  currentTab = tab;
-  document.querySelectorAll('.btab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  document.getElementById('searchWrap').style.display = tab==='board'?'block':'none';
-  document.getElementById('wardTabs').style.display = tab==='board'?'flex':'none';
-  document.getElementById('statsBar').style.display = tab==='board'?'flex':'none';
-  document.getElementById('fabBtn').style.display = tab==='board'?'flex':'none';
-  if(tab==='board') renderAll();
-  else renderAudit();
+async function log(action,details,wid){
+  try{await sb('POST','audit_log',{user_name:user.name,user_role:user.role||'',action,details,ward_id:wid||CW||null});}
+  catch(e){}
 }
-
-// ══════════════════════════════════════
-// RENDER ALL
-// ══════════════════════════════════════
-function renderAll(){
-  renderTabs(); renderStats(); renderBoard();
+async function loadData(){
+  showLoading();
+  try{
+    wards=await sb('GET','wards',null,'?order=created_at.asc');
+    patients=await sb('GET','patients',null,'?order=created_at.asc');
+    if(!wards.length)await seedDefaults();
+    if(!CW&&wards.length)CW=wards[0].id;
+    renderAll();
+  }catch(e){document.getElementById('SC').innerHTML='<div class="empty"><div class="ei">⚠️</div><p>خطأ في الاتصال</p></div>';}
 }
-
+async function seedDefaults(){
+  const w1=await sb('POST','wards',{id:uid(),name:'ردهة الإنعاش',icon:'🫁'});
+  const w2=await sb('POST','wards',{id:uid(),name:'الردهة العامة',icon:'🏥'});
+  wards=[w1[0],w2[0]];
+}
+function showLoading(){document.getElementById('SC').innerHTML='<div class="empty"><div class="spinner"></div><p>جاري التحميل...</p></div>';}
+function uid(){return '_'+Math.random().toString(36).slice(2,9);}
+function renderAll(){renderTabs();renderStats();renderBoard();}
 function renderTabs(){
-  const wrap = document.getElementById('wardTabs');
-  let html = '';
+  let h='';
   wards.forEach(w=>{
-    const cnt = patients.filter(p=>p.ward_id===w.id).length;
-    const active = w.id===currentWard ? 'active' : '';
-    html+=`<button class="ward-tab ${active}" onclick="switchWard('${w.id}')">
-      <span>${w.icon}</span><span>${w.name}</span>
-      <span class="tab-count">${cnt}</span>
-    </button>`;
+    const c=patients.filter(p=>p.ward_id===w.id).length;
+    h+=`<button class="wtab${w.id===CW&&CV==='board'?' active':''}" onclick="sw2('${w.id}')">${w.icon} ${w.name}<span class="wcount">${c}</span></button>`;
   });
-  html+=`<button class="ward-tab-add" onclick="openModal('manageWards')">⚙️</button>`;
-  wrap.innerHTML = html;
+  h+=`<button class="wtab${CV==='audit'?' active':''}" onclick="switchAudit()">📋 السجل</button>`;
+  h+=`<button class="wtab-add" onclick="openModal('manageWards')">⚙️</button>`;
+  document.getElementById('WT').innerHTML=h;
 }
-
-function switchWard(id){
-  currentWard = id;
-  document.getElementById('searchInput').value = '';
-  renderAll();
-}
-
+function sw2(id){CW=id;CV='board';document.getElementById('SI').value='';document.getElementById('SW').style.display='flex';document.getElementById('FB').style.display='flex';renderAll();}
+function switchAudit(){CV='audit';document.getElementById('SW').style.display='none';document.getElementById('FB').style.display='none';renderTabs();renderStats();renderAuditPage();}
 function renderStats(){
-  const pts = patients.filter(p=>p.ward_id===currentWard);
-  const c = {critical:0,watch:0,stable:0,'new-patient':0};
-  pts.forEach(p=>{ if(c[p.status]!==undefined) c[p.status]++; });
-  document.getElementById('statsBar').innerHTML=`
-    <span class="stat-chip cr"><span class="sdot"></span>حرج: ${c.critical}</span>
-    <span class="stat-chip wa"><span class="sdot"></span>مراقبة: ${c.watch}</span>
-    <span class="stat-chip np"><span class="sdot"></span>جديد: ${c['new-patient']}</span>
-    <span class="stat-chip st"><span class="sdot"></span>مستقر: ${c.stable}</span>
-    <span class="stat-chip to">المجموع: ${pts.length}</span>`;
-  const ward = wards.find(w=>w.id===currentWard);
-  document.getElementById('hSub').textContent = ward ? ward.name : '—';
+  const pts=patients.filter(p=>p.ward_id===CW);
+  const c={critical:0,watch:0,stable:0,'new-patient':0};
+  pts.forEach(p=>{if(c[p.status]!==undefined)c[p.status]++;});
+  document.getElementById('SR').innerHTML=`
+    <div class="scard cr"><div class="snum">${c.critical}</div><div class="slbl">حرج</div></div>
+    <div class="scard wa"><div class="snum">${c.watch}</div><div class="slbl">مراقبة</div></div>
+    <div class="scard nw"><div class="snum">${c['new-patient']}</div><div class="slbl">جديد</div></div>
+    <div class="scard st"><div class="snum">${c.stable}</div><div class="slbl">مستقر</div></div>
+    <div class="scard" style="background:var(--bg)"><div class="snum">${pts.length}</div><div class="slbl">المجموع</div></div>`;
 }
-
 function renderBoard(){
-  const q = document.getElementById('searchInput').value.trim().toLowerCase();
-  const ward = wards.find(w=>w.id===currentWard);
-  const area = document.getElementById('scrollArea');
-  if(!ward){
-    area.innerHTML=`<div class="empty"><div class="empty-icon">🏥</div><p>لا توجد ردهات<br>اضغط ⚙️ لإضافة ردهة</p></div>`;
-    return;
-  }
-  let pts = patients.filter(p=>p.ward_id===currentWard);
-  if(q) pts = pts.filter(p=>
-    p.name?.includes(q)||p.diagnosis?.includes(q)||p.bed?.includes(q)||
-    p.tags?.some(t=>t.includes(q))
-  );
-  pts.sort((a,b)=>(statusOrder[a.status]??9)-(statusOrder[b.status]??9));
-
-  const cnt = patients.filter(p=>p.ward_id===currentWard).length;
-  let html=`
-  <div class="ward-header-bar">
-    <div>
-      <div class="ward-name-display">${ward.icon} ${ward.name}</div>
-      <div class="ward-name-sub">${cnt} مريض — ${new Date().toLocaleDateString('ar-IQ')}</div>
-    </div>
-    <button class="ward-edit-btn" onclick="openModal('editWard','${ward.id}')">✏️ تعديل</button>
-  </div>`;
-
-  if(!pts.length){
-    html+=`<div class="empty"><div class="empty-icon">${q?'🔍':'🛏️'}</div><p>${q?'لا توجد نتائج':'لا يوجد مرضى في هذه الردهة'}</p></div>`;
-    area.innerHTML=html; return;
-  }
-
+  const q=document.getElementById('SI').value.trim().toLowerCase();
+  const ward=wards.find(w=>w.id===CW);
+  const area=document.getElementById('SC');
+  if(!ward){area.innerHTML='<div class="empty"><div class="ei">🏥</div><p>لا توجد ردهات</p></div>';return;}
+  let pts=patients.filter(p=>p.ward_id===CW);
+  if(q)pts=pts.filter(p=>p.name?.includes(q)||p.diagnosis?.includes(q)||p.bed?.includes(q)||p.tags?.some(t=>t.includes(q)));
+  pts.sort((a,b)=>(SO[a.status]??9)-(SO[b.status]??9));
+  const cnt=patients.filter(p=>p.ward_id===CW).length;
+  let h=`<div class="ward-hdr"><div><div class="wname">${ward.icon} ${ward.name}</div><div class="wsub">${cnt} مريض · ${new Date().toLocaleDateString('ar-IQ')}</div></div><button class="wedit" onclick="openModal('editWard','${ward.id}')">✏️ تعديل</button></div>`;
+  if(!pts.length){h+='<div class="empty"><div class="ei">'+(q?'🔍':'🛏️')+'</div><p>'+(q?'لا توجد نتائج':'لا يوجد مرضى')+'</p></div>';area.innerHTML=h;return;}
   pts.forEach(p=>{
-    const admit = p.admit_date ? new Date(p.admit_date).toLocaleDateString('ar-IQ') : '—';
-    const tags = (p.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('');
-    const syms = (p.symptoms||[]).map(s=>`<li>${s}</li>`).join('');
-    const recs = (p.recommendations||[]).map(r=>`<li>${r}</li>`).join('');
-    html+=`
-    <div class="card ${p.status}">
-      <div class="card-header">
-        <div>
-          <div class="patient-name">${p.name}</div>
-          <div class="patient-meta">${p.age} سنة · ${p.bed} · ${admit}</div>
-        </div>
-        <span class="status-badge ${p.status}"><span class="sdot"></span>${statusLabel[p.status]||p.status}</span>
+    const ad=p.admit_date?new Date(p.admit_date).toLocaleDateString('ar-IQ'):'—';
+    const tags=(p.tags||[]).map(t=>`<span class="ptag">${t}</span>`).join('');
+    const syms=(p.symptoms||[]).map(s=>`<li>${s}</li>`).join('');
+    const recs=(p.recommendations||[]).map(r=>`<li>${r}</li>`).join('');
+    h+=`<div class="pcard ${p.status}">
+      <div class="ph"><div><div class="pname">${p.name}</div><div class="pmeta">${p.age} سنة · ${p.bed} · ${ad}</div></div>
+      <span class="sbadge ${p.status}"><span class="dot"></span>${SL[p.status]||p.status}</span></div>
+      <div class="pb">
+        <div class="pdiag">📋 ${p.diagnosis||'—'}</div>
+        ${tags?`<div class="ptags">${tags}</div>`:''}
+        ${syms?`<div class="psec">الأعراض والموجودات</div><ul class="plist sym">${syms}</ul>`:''}
+        ${recs?`<div class="psec">التوصيات والأوامر</div><ul class="plist rec">${recs}</ul>`:''}
       </div>
-      <div class="card-body">
-        <div class="diag-line">📋 ${p.diagnosis||'—'}</div>
-        <div class="tags-row">${tags}</div>
-        ${syms?`<div class="sec-title">⚠️ الأعراض والموجودات</div><ul class="items-ul sym">${syms}</ul>`:''}
-        ${recs?`<div class="sec-title">📌 التوصيات</div><ul class="items-ul rec">${recs}</ul>`:''}
-      </div>
-      <div class="card-actions">
-        <button class="act-btn pr" onclick="openModal('editSymptoms','${p.id}')">➕ أعراض</button>
-        <button class="act-btn pr" onclick="openModal('editRecs','${p.id}')">➕ توصية</button>
-        <button class="act-btn"    onclick="openModal('editPatient','${p.id}')">✏️ تعديل</button>
-        <button class="act-btn su" onclick="openModal('discharge','${p.id}')">🏠 تخريج</button>
-      </div>
-    </div>`;
+      <div class="pfoot">
+        <button class="pact bl" onclick="openModal('editSymptoms','${p.id}')">＋ عرض</button>
+        <button class="pact bl" onclick="openModal('editRecs','${p.id}')">＋ توصية</button>
+        <button class="pact" onclick="openModal('editPatient','${p.id}')">✏️ تعديل</button>
+        <button class="pact gr" onclick="openModal('discharge','${p.id}')">🏠 تخريج</button>
+      </div></div>`;
   });
-  area.innerHTML = html;
+  area.innerHTML=h;
 }
-
-// ══════════════════════════════════════
-// AUDIT RENDER
-// ══════════════════════════════════════
-async function renderAudit(){
-  const area = document.getElementById('scrollArea');
-  area.innerHTML = `<div class="loading"><div class="spinner"></div><p>جاري التحميل...</p></div>`;
-  try {
-    const logs = await sb('GET','audit_log',null,'?order=created_at.desc&limit=100');
-    if(!logs.length){
-      area.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><p>لا توجد تعديلات بعد</p></div>`;
-      return;
-    }
-    let html = '';
-    logs.forEach(l=>{
-      const dt = new Date(l.created_at);
-      const timeStr = dt.toLocaleString('ar-IQ',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'numeric'});
-      const aLabel = actionLabel[l.action] || l.action;
-      html+=`
-      <div class="audit-item">
-        <div class="audit-header">
-          <div class="audit-user">👤 ${l.user_name}</div>
-          <div class="audit-time">${timeStr}</div>
-        </div>
-        <span class="audit-action">${aLabel}</span>
-        <div class="audit-details">${l.details||''}</div>
-      </div>`;
+async function renderAuditPage(){
+  const area=document.getElementById('SC');
+  area.innerHTML='<div class="empty"><div class="spinner"></div><p>جاري التحميل...</p></div>';
+  const wid=CW||wards[0]?.id||'';
+  window.auditFilter=async(id)=>{
+    const q=id?`?ward_id=eq.${id}&order=created_at.desc&limit=100`:'?order=created_at.desc&limit=100';
+    const logs=await sb('GET','audit_log',null,q);
+    const wo=wards.map(w=>`<option value="${w.id}"${w.id===id?' selected':''}>${w.icon} ${w.name}</option>`).join('');
+    const w=wards.find(x=>x.id===id);
+    let h=`<div class="ward-hdr"><div><div class="wname">📋 سجل التعديلات</div><div class="wsub">${w?w.icon+' '+w.name:''}</div></div></div>
+    <div class="fg" style="margin-bottom:12px"><select class="fsel" onchange="auditFilter(this.value)">${wo}</select></div>`;
+    if(!logs.length){h+='<div class="empty"><div class="ei">📋</div><p>لا توجد تعديلات</p></div>';}
+    else logs.forEach(l=>{
+      const dt=new Date(l.created_at).toLocaleString('ar-IQ',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'numeric'});
+      h+=`<div class="audit-item"><div class="at"><div class="auser">👤 ${l.user_name}${l.user_role?' <span style="font-size:10px;color:var(--muted)">('+l.user_role+')</span>':''}</div><div class="atime">${dt}</div></div><span class="atag">${AL[l.action]||l.action}</span><div class="adet">${l.details||''}</div></div>`;
     });
-    area.innerHTML = html;
-  } catch(e){
-    area.innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div><p>خطأ: ${e.message}</p></div>`;
-  }
+    area.innerHTML=h;
+  };
+  await window.auditFilter(wid);
 }
-
-// ══════════════════════════════════════
-// MODAL
-// ══════════════════════════════════════
-function openModal(action, target=null){
-  modalAction=action; modalTarget=target;
-  const modal=document.getElementById('modal');
-  modal.innerHTML = buildModal(action,target);
-  document.getElementById('overlay').classList.add('open');
-}
-function closeModal(){
-  document.getElementById('overlay').classList.remove('open');
-  modalAction=null; modalTarget=null;
-}
-function overlayClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
-
-function buildModal(action,target){
-  const H=t=>`<div class="modal-head"><div class="modal-title">${t}</div><button class="modal-close" onclick="closeModal()">✕</button></div>`;
-  const p = target ? patients.find(x=>x.id===target) : null;
-
-  if(action==='addPatient'){
-    const wardOpts = wards.map(w=>`<option value="${w.id}"${w.id===currentWard?' selected':''}>${w.icon} ${w.name}</option>`).join('');
-    return H('➕ إضافة مريض جديد')+`
-    <div class="fg"><label class="fl">الاسم الكامل</label><input class="fi" id="f_name" placeholder="اسم المريض"></div>
-    <div class="fg"><label class="fl">العمر</label><input class="fi" type="number" id="f_age" placeholder="بالسنوات"></div>
-    <div class="fg"><label class="fl">السرير / الغرفة</label><input class="fi" id="f_bed" placeholder="مثال: سرير 5"></div>
-    <div class="fg"><label class="fl">الردهة</label><select class="fsel" id="f_ward">${wardOpts}</select></div>
-    <div class="fg"><label class="fl">التشخيص</label><input class="fi" id="f_diag"></div>
-    <div class="fg"><label class="fl">الحالة</label>
-      <select class="fsel" id="f_status">
-        <option value="new-patient">🟣 جديد</option>
-        <option value="critical">🔴 حرج</option>
-        <option value="watch">🟡 مراقبة</option>
-        <option value="stable">🟢 مستقر</option>
-      </select></div>
-    <div class="fg"><label class="fl">الوسوم (مفصولة بفاصلة)</label><input class="fi" id="f_tags"></div>
-    <div class="fg"><label class="fl">الأعراض (كل سطر = عرض)</label><textarea class="fta" id="f_syms"></textarea></div>
-    <div class="fg"><label class="fl">التوصيات (كل سطر = توصية)</label><textarea class="fta" id="f_recs"></textarea></div>
-    <button class="sbtn" onclick="doAddPatient()">✅ إضافة المريض</button>`;
+function openModal(a,t=null){MA=a;MT=t;document.getElementById('MD').innerHTML=bm(a,t);document.getElementById('OV').classList.add('open');}
+function closeModal(){document.getElementById('OV').classList.remove('open');}
+function ovc(e){if(e.target===document.getElementById('OV'))closeModal();}
+function MH(t){return `<div class="mh"><div class="mt">${t}</div><button class="mc" onclick="closeModal()">✕</button></div>`;}
+function bm(a,t){
+  const p=t?patients.find(x=>x.id===t):null;
+  if(a==='addPatient'){
+    const wo=wards.map(w=>`<option value="${w.id}"${w.id===CW?' selected':''}>${w.icon} ${w.name}</option>`).join('');
+    return MH('إضافة مريض جديد')+`
+    <div class="fg"><label class="fl">الاسم الكامل</label><input class="fi" id="fn" placeholder="اسم المريض"></div>
+    <div class="fg"><label class="fl">العمر</label><input class="fi" type="number" id="fa"></div>
+    <div class="fg"><label class="fl">السرير</label><input class="fi" id="fb" placeholder="سرير 1"></div>
+    <div class="fg"><label class="fl">الردهة</label><select class="fsel" id="fw">${wo}</select></div>
+    <div class="fg"><label class="fl">التشخيص</label><input class="fi" id="fd"></div>
+    <div class="fg"><label class="fl">الحالة</label><select class="fsel" id="fs"><option value="new-patient">🟣 جديد</option><option value="critical">🔴 حرج</option><option value="watch">🟡 مراقبة</option><option value="stable">🟢 مستقر</option></select></div>
+    <div class="fg"><label class="fl">الوسوم (بفاصلة)</label><input class="fi" id="ft"></div>
+    <div class="fg"><label class="fl">الأعراض (كل سطر = عرض)</label><textarea class="fta" id="fsy"></textarea></div>
+    <div class="fg"><label class="fl">التوصيات (كل سطر = توصية)</label><textarea class="fta" id="frc"></textarea></div>
+    <button class="sbtn" onclick="doAdd()">✅ إضافة المريض</button>`;
   }
-
-  if(action==='editPatient'){
-    const wardOpts = wards.map(w=>`<option value="${w.id}"${w.id===p.ward_id?' selected':''}>${w.icon} ${w.name}</option>`).join('');
-    return H(`✏️ تعديل — ${p.name}`)+`
-    <div class="fg"><label class="fl">الاسم</label><input class="fi" id="e_name" value="${p.name}"></div>
-    <div class="fg"><label class="fl">العمر</label><input class="fi" type="number" id="e_age" value="${p.age||''}"></div>
-    <div class="fg"><label class="fl">السرير</label><input class="fi" id="e_bed" value="${p.bed||''}"></div>
-    <div class="fg"><label class="fl">الردهة</label><select class="fsel" id="e_ward">${wardOpts}</select></div>
-    <div class="fg"><label class="fl">التشخيص</label><input class="fi" id="e_diag" value="${p.diagnosis||''}"></div>
-    <div class="fg"><label class="fl">الحالة</label>
-      <select class="fsel" id="e_status">
-        <option value="critical"${p.status==='critical'?' selected':''}>🔴 حرج</option>
-        <option value="watch"${p.status==='watch'?' selected':''}>🟡 مراقبة</option>
-        <option value="stable"${p.status==='stable'?' selected':''}>🟢 مستقر</option>
-        <option value="new-patient"${p.status==='new-patient'?' selected':''}>🟣 جديد</option>
-      </select></div>
-    <div class="fg"><label class="fl">الوسوم (مفصولة بفاصلة)</label><input class="fi" id="e_tags" value="${(p.tags||[]).join(', ')}"></div>
-    <button class="sbtn" onclick="doEditPatient('${p.id}')">💾 حفظ</button>`;
+  if(a==='editPatient'){
+    const wo=wards.map(w=>`<option value="${w.id}"${w.id===p.ward_id?' selected':''}>${w.icon} ${w.name}</option>`).join('');
+    return MH('تعديل — '+p.name)+`
+    <div class="fg"><label class="fl">الاسم</label><input class="fi" id="en" value="${p.name}"></div>
+    <div class="fg"><label class="fl">العمر</label><input class="fi" type="number" id="ea" value="${p.age||''}"></div>
+    <div class="fg"><label class="fl">السرير</label><input class="fi" id="eb" value="${p.bed||''}"></div>
+    <div class="fg"><label class="fl">الردهة</label><select class="fsel" id="ew">${wo}</select></div>
+    <div class="fg"><label class="fl">التشخيص</label><input class="fi" id="ed" value="${p.diagnosis||''}"></div>
+    <div class="fg"><label class="fl">الحالة</label><select class="fsel" id="es"><option value="critical"${p.status==='critical'?' selected':''}>🔴 حرج</option><option value="watch"${p.status==='watch'?' selected':''}>🟡 مراقبة</option><option value="stable"${p.status==='stable'?' selected':''}>🟢 مستقر</option><option value="new-patient"${p.status==='new-patient'?' selected':''}>🟣 جديد</option></select></div>
+    <div class="fg"><label class="fl">الوسوم (بفاصلة)</label><input class="fi" id="et" value="${(p.tags||[]).join(', ')}"></div>
+    <button class="sbtn" onclick="doEdit('${p.id}')">💾 حفظ</button>`;
   }
-
-  if(action==='editSymptoms'){
-    const items=(p.symptoms||[]).map((s,i)=>`<li>${s}<button class="rm-btn" onclick="removeItem('symptoms','${p.id}',${i})">✕</button></li>`).join('');
-    return H(`⚠️ أعراض — ${p.name}`)+`
-    <ul class="edit-list">${items||'<li style="color:var(--muted);font-size:12px;">لا توجد أعراض</li>'}</ul>
-    <div class="add-row"><input class="fi" id="new_sym" placeholder="عرض جديد..."><button class="add-btn" onclick="addItem('symptoms','${p.id}')">إضافة</button></div>`;
+  if(a==='editSymptoms'){
+    const it=(p.symptoms||[]).map((s,i)=>`<li>${s}<button class="rm" onclick="rmItem('symptoms','${p.id}',${i})">✕</button></li>`).join('');
+    return MH('أعراض — '+p.name)+`<ul class="elist">${it||'<li style="color:var(--muted)">لا توجد أعراض</li>'}</ul><div class="arow"><input class="fi" id="ns" placeholder="عرض جديد..."><button class="abtn" onclick="addIt('symptoms','${p.id}')">إضافة</button></div>`;
   }
-
-  if(action==='editRecs'){
-    const items=(p.recommendations||[]).map((r,i)=>`<li>${r}<button class="rm-btn" onclick="removeItem('recommendations','${p.id}',${i})">✕</button></li>`).join('');
-    return H(`📌 توصيات — ${p.name}`)+`
-    <ul class="edit-list">${items||'<li style="color:var(--muted);font-size:12px;">لا توجد توصيات</li>'}</ul>
-    <div class="add-row"><input class="fi" id="new_rec" placeholder="توصية جديدة..."><button class="add-btn" onclick="addItem('recommendations','${p.id}')">إضافة</button></div>`;
+  if(a==='editRecs'){
+    const it=(p.recommendations||[]).map((r,i)=>`<li>${r}<button class="rm" onclick="rmItem('recommendations','${p.id}',${i})">✕</button></li>`).join('');
+    return MH('توصيات — '+p.name)+`<ul class="elist">${it||'<li style="color:var(--muted)">لا توجد توصيات</li>'}</ul><div class="arow"><input class="fi" id="nr" placeholder="توصية جديدة..."><button class="abtn" onclick="addIt('recommendations','${p.id}')">إضافة</button></div>`;
   }
-
-  if(action==='discharge'){
-    return H('🏠 تخريج مريض')+`
-    <div class="dis-box">
-      <p>هل تريد تخريج<br><strong>${p.name}</strong>؟<br><span style="font-size:11px">سيُحذف نهائياً من اللوحة</span></p>
-      <div class="dis-btns">
-        <button class="cbtn yes" onclick="doDischarge('${p.id}','${p.name}')">✅ تخريج</button>
-        <button class="cbtn no" onclick="closeModal()">إلغاء</button>
-      </div>
-    </div>`;
+  if(a==='discharge'){
+    return MH('تخريج مريض')+`<div class="dbox"><p>هل تريد تخريج<br><strong>${p.name}</strong>؟</p><div class="dbtns"><button class="cbtn yes" onclick="doDis('${p.id}','${p.name}')">✅ تخريج</button><button class="cbtn no" onclick="closeModal()">إلغاء</button></div></div>`;
   }
-
-  if(action==='manageWards'){
-    const list = wards.map(w=>{
-      const cnt = patients.filter(p=>p.ward_id===w.id).length;
-      return `<div class="wm-item">
-        <div class="wm-item-info"><div class="wm-name">${w.icon} ${w.name}</div><div class="wm-count">${cnt} مريض</div></div>
-        <div class="wm-btns">
-          <button class="wm-btn" onclick="openModal('editWard','${w.id}')">✏️</button>
-          ${cnt===0?`<button class="wm-btn del" onclick="doDeleteWard('${w.id}','${w.name}')">🗑️</button>`:''}
-        </div>
-      </div>`;
-    }).join('');
-    return H('⚙️ إدارة الردهات')+`
-    <div>${list}</div>
-    <hr class="divider">
-    <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px;">➕ إضافة ردهة جديدة</div>
-    <div class="fg"><label class="fl">اسم الردهة</label><input class="fi" id="nw_name" placeholder="مثال: ردهة الجراحة"></div>
-    <div class="fg"><label class="fl">الأيقونة</label><input class="fi" id="nw_icon" placeholder="🔬" style="font-size:18px"></div>
-    <button class="sbtn" onclick="doAddWard()">➕ إضافة الردهة</button>`;
+  if(a==='manageWards'){
+    const list=wards.map(w=>{const c=patients.filter(p=>p.ward_id===w.id).length;return `<div class="wmi"><div><div class="wmi-n">${w.icon} ${w.name}</div><div class="wmi-c">${c} مريض</div></div><div class="wmi-b"><button class="wmb" onclick="openModal('editWard','${w.id}')">✏️</button>${c===0?`<button class="wmb del" onclick="doDel('${w.id}','${w.name}')">🗑️</button>`:''}</div></div>`;}).join('');
+    return MH('إدارة الردهات')+`<div>${list}</div><hr class="div"><div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:10px">إضافة ردهة جديدة</div><div class="fg"><label class="fl">اسم الردهة</label><input class="fi" id="nwn" placeholder="ردهة الجراحة"></div><div class="fg"><label class="fl">الأيقونة</label><input class="fi" id="nwi" placeholder="🔬" style="font-size:18px"></div><button class="sbtn" onclick="doAddW()">إضافة الردهة</button>`;
   }
-
-  if(action==='editWard'){
-    const w = wards.find(x=>x.id===target);
-    const cnt = patients.filter(p=>p.ward_id===w.id).length;
-    return H(`✏️ تعديل: ${w.name}`)+`
-    <div class="fg"><label class="fl">اسم الردهة</label><input class="fi" id="ew_name" value="${w.name}"></div>
-    <div class="fg"><label class="fl">الأيقونة</label><input class="fi" id="ew_icon" value="${w.icon}" style="font-size:18px"></div>
-    <button class="sbtn" onclick="doEditWard('${w.id}','${w.name}')">💾 حفظ</button>
-    <hr class="divider">
-    ${cnt===0?`<button class="sbtn red" onclick="doDeleteWard('${w.id}','${w.name}')">🗑️ حذف هذه الردهة</button>`:'<p style="font-size:12px;color:var(--muted);text-align:center">لا يمكن حذف ردهة فيها مرضى</p>'}`;
+  if(a==='editWard'){
+    const w=wards.find(x=>x.id===t);const c=patients.filter(p=>p.ward_id===w.id).length;
+    return MH('تعديل: '+w.name)+`<div class="fg"><label class="fl">اسم الردهة</label><input class="fi" id="ewn" value="${w.name}"></div><div class="fg"><label class="fl">الأيقونة</label><input class="fi" id="ewi" value="${w.icon}" style="font-size:18px"></div><button class="sbtn" onclick="doEditW('${w.id}','${w.name}')">💾 حفظ</button><hr class="div">${c===0?`<button class="sbtn red" onclick="doDel('${w.id}','${w.name}')">🗑️ حذف الردهة</button>`:'<p style="font-size:12px;color:var(--muted);text-align:center">لا يمكن حذف ردهة فيها مرضى</p>'}`;
   }
   return '';
 }
-
-// ══════════════════════════════════════
-// ACTIONS
-// ══════════════════════════════════════
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
+function toast(m){const t=document.getElementById('TS');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+async function doAdd(){
+  const n=document.getElementById('fn').value.trim(),d=document.getElementById('fd').value.trim();
+  if(!n||!d){alert('الاسم والتشخيص مطلوبان');return;}
+  const wid=document.getElementById('fw').value;
+  const data={id:uid(),ward_id:wid,name:n,age:parseInt(document.getElementById('fa').value)||0,bed:document.getElementById('fb').value.trim()||'—',status:document.getElementById('fs').value,admit_date:new Date().toISOString().split('T')[0],diagnosis:d,tags:document.getElementById('ft').value.split(',').map(t=>t.trim()).filter(Boolean),symptoms:document.getElementById('fsy').value.split('\n').map(s=>s.trim()).filter(Boolean),recommendations:document.getElementById('frc').value.split('\n').map(r=>r.trim()).filter(Boolean)};
+  try{const r=await sb('POST','patients',data);patients.push(r[0]);CW=wid;await log('add_patient','أضاف: '+n+' — '+d,wid);closeModal();renderAll();toast('✅ تمت الإضافة');}catch(e){alert(e.message);}
 }
-
-async function doAddPatient(){
-  const name=document.getElementById('f_name').value.trim();
-  const diag=document.getElementById('f_diag').value.trim();
-  if(!name||!diag){alert('الاسم والتشخيص مطلوبان');return;}
-  const data = {
-    id:uid(),
-    ward_id:document.getElementById('f_ward').value,
-    name, age:parseInt(document.getElementById('f_age').value)||0,
-    bed:document.getElementById('f_bed').value.trim()||'—',
-    status:document.getElementById('f_status').value,
-    admit_date:new Date().toISOString().split('T')[0],
-    diagnosis:diag,
-    tags:document.getElementById('f_tags').value.split(',').map(t=>t.trim()).filter(Boolean),
-    symptoms:document.getElementById('f_syms').value.split('\n').map(s=>s.trim()).filter(Boolean),
-    recommendations:document.getElementById('f_recs').value.split('\n').map(r=>r.trim()).filter(Boolean),
-  };
-  try {
-    const res = await sb('POST','patients',data);
-    patients.push(res[0]);
-    currentWard = data.ward_id;
-    await log('add_patient',`أضاف المريض: ${name} — ${diag}`);
-    closeModal(); renderAll(); showToast('✅ تمت إضافة المريض');
-  } catch(e){ alert('خطأ: '+e.message); }
+async function doEdit(id){
+  const n=document.getElementById('en').value.trim(),wid=document.getElementById('ew').value;
+  const data={name:n,age:parseInt(document.getElementById('ea').value)||0,bed:document.getElementById('eb').value.trim(),ward_id:wid,diagnosis:document.getElementById('ed').value.trim(),status:document.getElementById('es').value,tags:document.getElementById('et').value.split(',').map(t=>t.trim()).filter(Boolean)};
+  try{await sb('PATCH','patients',data,'?id=eq.'+id);const i=patients.findIndex(x=>x.id===id);patients[i]={...patients[i],...data};CW=wid;await log('edit_patient','عدّل: '+n,wid);closeModal();renderAll();toast('💾 تم الحفظ');}catch(e){alert(e.message);}
 }
-
-async function doEditPatient(id){
-  const name=document.getElementById('e_name').value.trim();
-  const wardId=document.getElementById('e_ward').value;
-  const data = {
-    name, age:parseInt(document.getElementById('e_age').value)||0,
-    bed:document.getElementById('e_bed').value.trim(),
-    ward_id:wardId,
-    diagnosis:document.getElementById('e_diag').value.trim(),
-    status:document.getElementById('e_status').value,
-    tags:document.getElementById('e_tags').value.split(',').map(t=>t.trim()).filter(Boolean),
-  };
-  try {
-    await sb('PATCH','patients',data,`?id=eq.${id}`);
-    const i=patients.findIndex(x=>x.id===id);
-    patients[i]={...patients[i],...data};
-    currentWard=wardId;
-    await log('edit_patient',`عدّل بيانات: ${name}`);
-    closeModal(); renderAll(); showToast('💾 تم الحفظ');
-  } catch(e){ alert('خطأ: '+e.message); }
+async function rmItem(type,pid,idx){
+  const p=patients.find(x=>x.id===pid),f=type==='symptoms'?'symptoms':'recommendations',rm=p[f][idx];
+  p[f].splice(idx,1);
+  try{await sb('PATCH','patients',{[f]:p[f]},'?id=eq.'+pid);await log(type==='symptoms'?'remove_symptom':'remove_rec',p.name+': حذف "'+rm+'"',p.ward_id);openModal(type==='symptoms'?'editSymptoms':'editRecs',pid);renderBoard();}catch(e){alert(e.message);}
 }
-
-async function removeItem(type,pid,idx){
-  const p=patients.find(x=>x.id===pid);
-  const field=type==='symptoms'?'symptoms':'recommendations';
-  const removed=p[field][idx];
-  p[field].splice(idx,1);
-  try {
-    await sb('PATCH','patients',{[field]:p[field]},`?id=eq.${pid}`);
-    await log(type==='symptoms'?'remove_symptom':'remove_rec',`${p.name}: حذف "${removed}"`);
-    openModal(type==='symptoms'?'editSymptoms':'editRecs',pid);
-    renderBoard();
-  } catch(e){ alert('خطأ: '+e.message); }
+async function addIt(type,pid){
+  const v=document.getElementById(type==='symptoms'?'ns':'nr')?.value.trim();if(!v)return;
+  const p=patients.find(x=>x.id===pid),f=type==='symptoms'?'symptoms':'recommendations';
+  p[f]=[...p[f],v];
+  try{await sb('PATCH','patients',{[f]:p[f]},'?id=eq.'+pid);await log(type==='symptoms'?'add_symptom':'add_rec',p.name+': أضاف "'+v+'"',p.ward_id);openModal(type==='symptoms'?'editSymptoms':'editRecs',pid);renderBoard();}catch(e){alert(e.message);}
 }
-
-async function addItem(type,pid){
-  const inputId=type==='symptoms'?'new_sym':'new_rec';
-  const val=document.getElementById(inputId)?.value.trim();
-  if(!val) return;
-  const p=patients.find(x=>x.id===pid);
-  const field=type==='symptoms'?'symptoms':'recommendations';
-  p[field]=[...p[field],val];
-  try {
-    await sb('PATCH','patients',{[field]:p[field]},`?id=eq.${pid}`);
-    await log(type==='symptoms'?'add_symptom':'add_rec',`${p.name}: أضاف "${val}"`);
-    openModal(type==='symptoms'?'editSymptoms':'editRecs',pid);
-    renderBoard();
-  } catch(e){ alert('خطأ: '+e.message); }
+async function doDis(id,n){
+  const p=patients.find(x=>x.id===id);
+  try{await sb('DELETE','patients',null,'?id=eq.'+id);patients=patients.filter(x=>x.id!==id);await log('discharge','خرّج: '+n,p.ward_id);closeModal();renderAll();toast('🏠 تم التخريج');}catch(e){alert(e.message);}
 }
-
-async function doDischarge(id,name){
-  try {
-    await sb('DELETE','patients',null,`?id=eq.${id}`);
-    patients=patients.filter(x=>x.id!==id);
-    await log('discharge',`خرّج المريض: ${name}`);
-    closeModal(); renderAll(); showToast('🏠 تم تخريج المريض');
-  } catch(e){ alert('خطأ: '+e.message); }
+async function doAddW(){
+  const n=document.getElementById('nwn').value.trim(),ic=document.getElementById('nwi').value.trim()||'🏥';
+  if(!n){alert('اسم الردهة مطلوب');return;}
+  try{const r=await sb('POST','wards',{id:uid(),name:n,icon:ic});wards.push(r[0]);CW=r[0].id;await log('add_ward','أضاف: '+ic+' '+n,r[0].id);closeModal();renderAll();toast('✅ تمت الإضافة');}catch(e){alert(e.message);}
 }
-
-async function doAddWard(){
-  const name=document.getElementById('nw_name').value.trim();
-  const icon=document.getElementById('nw_icon').value.trim()||'🏥';
-  if(!name){alert('اسم الردهة مطلوب');return;}
-  try {
-    const res=await sb('POST','wards',{id:uid(),name,icon});
-    wards.push(res[0]);
-    currentWard=res[0].id;
-    await log('add_ward',`أضاف ردهة: ${icon} ${name}`);
-    closeModal(); renderAll(); showToast('✅ تمت إضافة الردهة');
-  } catch(e){ alert('خطأ: '+e.message); }
+async function doEditW(id,old){
+  const n=document.getElementById('ewn').value.trim(),ic=document.getElementById('ewi').value.trim();
+  try{await sb('PATCH','wards',{name:n,icon:ic},'?id=eq.'+id);const w=wards.find(x=>x.id===id);w.name=n;w.icon=ic;await log('edit_ward','عدّل: '+old+' → '+ic+' '+n,id);closeModal();renderAll();toast('💾 تم الحفظ');}catch(e){alert(e.message);}
 }
-
-async function doEditWard(id,oldName){
-  const name=document.getElementById('ew_name').value.trim();
-  const icon=document.getElementById('ew_icon').value.trim();
-  try {
-    await sb('PATCH','wards',{name,icon},`?id=eq.${id}`);
-    const w=wards.find(x=>x.id===id);
-    w.name=name; w.icon=icon;
-    await log('edit_ward',`عدّل ردهة: ${oldName} → ${icon} ${name}`);
-    closeModal(); renderAll(); showToast('💾 تم الحفظ');
-  } catch(e){ alert('خطأ: '+e.message); }
+async function doDel(id,n){
+  if(!confirm('حذف "'+n+'"؟'))return;
+  try{await sb('DELETE','wards',null,'?id=eq.'+id);wards=wards.filter(x=>x.id!==id);patients=patients.filter(x=>x.ward_id!==id);if(CW===id)CW=wards[0]?.id||null;await log('delete_ward','حذف: '+n);closeModal();renderAll();toast('🗑️ تم الحذف');}catch(e){alert(e.message);}
 }
-
-async function doDeleteWard(id,name){
-  if(!confirm(`حذف ردهة "${name}"؟`)) return;
-  try {
-    await sb('DELETE','wards',null,`?id=eq.${id}`);
-    wards=wards.filter(x=>x.id!==id);
-    if(currentWard===id) currentWard=wards[0]?.id||null;
-    await log('delete_ward',`حذف ردهة: ${name}`);
-    closeModal(); renderAll(); showToast('🗑️ تم الحذف');
-  } catch(e){ alert('خطأ: '+e.message); }
-}
-
-// ══════════════════════════════════════
-// PWA + INIT
-// ══════════════════════════════════════
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
-}
-
-if(currentUser){
-  showApp();
-} else {
-  document.getElementById('loginScreen').style.display='flex';
-}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+if(user)showApp();
 </script>
 </body>
 </html>
