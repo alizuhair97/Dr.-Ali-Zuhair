@@ -54,7 +54,7 @@ body { font-family: 'Tajawal', sans-serif; color: var(--text); direction: rtl; d
 .topbar { background: #ffffff; border-bottom: 1px solid var(--border); padding: calc(var(--safe-top) + 12px) 16px 0; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.01); }
 .trow { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .app-title { font-size: 18px; font-weight: 800; color: var(--text); }
-.tright { display: flex; align-items: center; gap: 12px; }
+.tright { display: flex; align-items: center; gap: 8px; }
 .clock { font-size: 11px; color: var(--muted); line-height: 1.4; text-align: left; font-weight: 500; }
 .upill { display: flex; align-items: center; gap: 6px; background: var(--bg); border-radius: 24px; padding: 6px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); transition: all 0.2s; }
 .upill:active { transform: scale(0.95); background: var(--border); }
@@ -80,10 +80,12 @@ body { font-family: 'Tajawal', sans-serif; color: var(--text); direction: rtl; d
 .scard.nw .snum { color: var(--nw); }
 
 /* Search Area */
-.search-wrap { padding: 12px 16px; background: #ffffff; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-.sbox { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 14px; padding: 10px 14px; transition: all 0.2s; }
+.search-wrap { padding: 12px 16px; background: #ffffff; border-bottom: 1px solid var(--border); flex-shrink: 0; display: flex; gap: 8px; align-items: center; }
+.sbox { flex: 1; display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 14px; padding: 10px 14px; transition: all 0.2s; }
 .sbox:focus-within { border-color: var(--accent); background: #ffffff; box-shadow: 0 0 0 3px rgba(49,130,206,0.08); }
 .sbox input { flex: 1; border: none; background: none; outline: none; font-family: 'Tajawal', sans-serif; font-size: 14px; color: var(--text); direction: rtl; }
+.share-btn { background: #e3f2fd; border: none; color: var(--accent); padding: 12px 16px; border-radius: 14px; font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
+.share-btn:active { transform: scale(0.95); background: #bbdefb; }
 
 /* Scrollable Container */
 .scroll { flex: 1; overflow-y: auto; padding: 16px 16px calc(var(--safe-bot) + 88px); background: var(--bg); }
@@ -128,7 +130,7 @@ body { font-family: 'Tajawal', sans-serif; color: var(--text); direction: rtl; d
 .pfoot { display: flex; gap: 6px; padding: 10px 16px 14px; border-top: 1px solid var(--border); flex-wrap: wrap; background: #fafafa; }
 .pact { font-family: 'Tajawal', sans-serif; font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 10px; border: 1.5px solid var(--border); background: #ffffff; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.15s ease; }
 .pact:active { transform: scale(0.95); background: var(--bg); }
-.pact.bl { color: var(--accent); border-color: #ebf8ff; background: #xebf8ff; }
+.pact.bl { color: var(--accent); border-color: #ebf8ff; background: #ebf8ff; }
 .pact.gr { color: var(--st); border-color: var(--st-bd); }
 
 /* Floating Action Button */
@@ -230,6 +232,7 @@ body { font-family: 'Tajawal', sans-serif; color: var(--text); direction: rtl; d
 
 <div class="search-wrap" id="SW" style="display:none">
   <div class="sbox"><span>🔍</span><input type="text" id="SI" placeholder="بحث باسم المريض أو التشخيص..." oninput="renderBoard()"></div>
+  <button class="share-btn" onclick="playClick(); shareCurrentWardSummary()">📤 مشاركة الموقف</button>
 </div>
 
 <div class="scroll" id="SC" style="display:none"></div>
@@ -240,7 +243,7 @@ body { font-family: 'Tajawal', sans-serif; color: var(--text); direction: rtl; d
 <div class="toast" id="TS"></div>
 
 <script>
-// Web Audio API HTML5 Haptic Sound Generator
+// Web Audio API
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playClick() {
   try {
@@ -269,7 +272,7 @@ async function sb(m,t,d,q=''){
 }
 
 let user=JSON.parse(localStorage.getItem('icu_user')||'null');
-let wards=[],patients=[],CW=null,CV='board',MA=null,MT=null;
+let wards=[],patients=[],archivePatients=[],CW=null,CV='board',MA=null,MT=null;
 const SL={critical:'حرج',watch:'مراقبة',stable:'مستقر','new-patient':'جديد'};
 const SO={critical:0,watch:1,'new-patient':2,stable:3};
 const AL={add_patient:'إضافة مريض',edit_patient:'تعديل مريض',discharge:'تخريج',add_symptom:'إضافة عرض',remove_symptom:'حذف عرض',add_rec:'إضافة توصية',remove_rec:'حذف توصية',add_ward:'إضافة ردهة',edit_ward:'تعديل ردهة',delete_ward:'حذف ردهة'};
@@ -304,6 +307,7 @@ async function loadData(){
   try{
     wards=await sb('GET','wards',null,'?order=created_at.asc');
     patients=await sb('GET','patients',null,'?order=created_at.asc');
+    try { archivePatients = await sb('GET','archive',null,'?order=discharged_at.desc&limit=100'); } catch(ae){ archivePatients=[]; }
     if(!wards.length)await seedDefaults();
     if(!CW&&wards.length)CW=wards[0].id;
     renderAll();
@@ -316,7 +320,7 @@ async function seedDefaults(){
 }
 function showLoading(){document.getElementById('SC').innerHTML='<div class="empty"><div class="spinner"></div><p>جاري تحميل البيانات...</p></div>';}
 function uid(){return '_'+Math.random().toString(36).slice(2,9);}
-function renderAll(){renderTabs();renderStats();renderBoard();}
+function renderAll(){renderTabs();renderStats();if(CV==='board')renderBoard();else if(CV==='audit')renderAuditPage();else if(CV==='archive')renderArchivePage();}
 
 function renderTabs(){
   let h='';
@@ -324,12 +328,14 @@ function renderTabs(){
     const c=patients.filter(p=>p.ward_id===w.id).length;
     h+=`<button class="wtab${w.id===CW&&CV==='board'?' active':''}" onclick="playClick(); sw2('${w.id}')">${w.icon} ${w.name}<span class="wcount">${c}</span></button>`;
   });
+  h+=`<button class="wtab${CV==='archive'?' active':''}" onclick="playClick(); switchArchive()">📦 الأرشيف</button>`;
   h+=`<button class="wtab${CV==='audit'?' active':''}" onclick="playClick(); switchAudit()">📋 السجل</button>`;
   h+=`<button class="wtab-add" onclick="playClick(); openModal('manageWards')">⚙️</button>`;
   document.getElementById('WT').innerHTML=h;
 }
 function sw2(id){CW=id;CV='board';document.getElementById('SI').value='';document.getElementById('SW').style.display='flex';document.getElementById('FB').style.display='flex';renderAll();}
-function switchAudit(){CV='audit';document.getElementById('SW').style.display='none';document.getElementById('FB').style.display='none';renderTabs();renderStats();renderAuditPage();}
+function switchAudit(){CV='audit';document.getElementById('SW').style.display='none';document.getElementById('FB').style.display='none';renderAll();}
+function switchArchive(){CV='archive';document.getElementById('SW').style.display='none';document.getElementById('FB').style.display='none';renderAll();}
 
 function renderStats(){
   const pts=patients.filter(p=>p.ward_id===CW);
@@ -399,6 +405,52 @@ async function renderAuditPage(){
   await window.auditFilter(wid);
 }
 
+function renderArchivePage(){
+  const area=document.getElementById('SC');
+  let h=`<div class="ward-hdr"><div><div class="wname">📦 أرشيف المرضى المخّرجين</div><div class="wsub">آخر 100 مريض تم إخلاء سريرهم</div></div></div>`;
+  if(!archivePatients.length){
+    h+='<div class="empty"><div class="ei">📦</div><p>الأرشيف فارغ حالياً</p></div>';
+    area.innerHTML=h;
+    return;
+  }
+  archivePatients.forEach(p=>{
+    const disTime=p.discharged_at?new Date(p.discharged_at).toLocaleString('ar-IQ'):'—';
+    h+=`<div class="pcard stable" style="opacity: 0.85;">
+      <div class="ph"><div><div class="pname" style="color:var(--muted); text-decoration: line-through;">${p.name}</div><div class="pmeta">${p.age} سنة · السرير ${p.bed} · الخروج: ${disTime}</div></div></div>
+      <div class="pb"><div class="pdiag" style="font-size:13px; background:#f1f5f9">📋 التشخيص عند الدخول: ${p.diagnosis||'—'}</div></div>
+    </div>`;
+  });
+  area.innerHTML=h;
+}
+
+function shareCurrentWardSummary(){
+  const ward=wards.find(w=>w.id===CW);
+  if(!ward) return;
+  const pts=patients.filter(p=>p.ward_id===CW);
+  if(!pts.length){ toast('⚠️ لا يوجد مرضى في هذه الردهة لتصدير موقفهم'); return; }
+  
+  let msg=`📋 *موقف ${ward.icon} ${ward.name}*\n📅 التاريخ: ${new Date().toLocaleDateString('ar-IQ')}\n`;
+  msg+=`━━━━━━━━━━━━━━━\n\n`;
+  
+  pts.forEach((p, idx)=>{
+    const stEmoji = p.status==='critical'?'🔴 حرج': p.status==='watch'?'🟡 مراقبة': p.status==='new-patient'?'🟣 جديد':'🟢 مستقر';
+    msg+=`${idx+1}. *${p.name}* (${p.age} سنة)\n`;
+    msg+=`📍 السرير: ${p.bed} | الحالة: ${stEmoji}\n`;
+    msg+=`🩺 التشخيص: ${p.diagnosis||'—'}\n`;
+    if(p.symptoms && p.symptoms.length) msg+=`📝 الأعراض: ${p.symptoms.join(' - ')}\n`;
+    if(p.recommendations && p.recommendations.length) msg+=`💊 الأوامر الطبية: ${p.recommendations.join(' - ')}\n`;
+    msg+=`✍️ الطبيب المسؤول: ${user.name}\n`;
+    msg+=`┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n`;
+  });
+  
+  if(navigator.share){
+    navigator.share({ title: 'الموقف اليومي', text: msg }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(msg);
+    toast('📋 تم نسخ الموقف النصي بنجاح إلى الحافظة!');
+  }
+}
+
 function openModal(a,t=null){MA=a;MT=t;document.getElementById('MD').innerHTML=bm(a,t);document.getElementById('OV').classList.add('open');}
 function closeModal(){document.getElementById('OV').classList.remove('open');}
 function ovc(e){if(e.target===document.getElementById('OV'))closeModal();}
@@ -441,7 +493,7 @@ function bm(a,t){
     return MH('التوصيات الطبية والعلاجية — '+p.name)+`<ul class="elist">${it||'<li style="color:var(--muted)">لا توجد توصيات مسجلة</li>'}</ul><div class="arow"><input class="fi" id="nr" placeholder="توصية أو خطة علاجية جديدة..."><button class="abtn" onclick="playClick(); addIt('recommendations','${p.id}')">إضافة</button></div>`;
   }
   if(a==='discharge'){
-    return MH('تأكيد تخريج مريض')+`<div class="dbox"><p>هل أنت متأكد من تخريج المريض<br><strong>${p.name}</strong> وإخلاء السرير؟</p><div class="dbtns"><button class="cbtn yes" onclick="playClick(); doDis('${p.id}','${p.name}')">✅ نعم، تخريج</button><button class="cbtn no" onclick="playClick(); closeModal()">إلغاء</button></div></div>`;
+    return MH('تأكيد تخريج مريض')+`<div class="dbox"><p>هل أنت متأكد من تخريج المريض<br><strong>${p.name}</strong> وإخلاء السرير ونقله للأرشيف؟</p><div class="dbtns"><button class="cbtn yes" onclick="playClick(); doDis('${p.id}','${p.name}')">✅ نعم، تخريج</button><button class="cbtn no" onclick="playClick(); closeModal()">إلغاء</button></div></div>`;
   }
   if(a==='manageWards'){
     const list=wards.map(w=>{const c=patients.filter(p=>p.ward_id===w.id).length;return `<div class="wmi"><div><div class="wmi-n">${w.icon} ${w.name}</div><div class="wmi-c">${c} مريض مسجل</div></div><div class="wmi-b"><button class="wmb" onclick="playClick(); openModal('editWard','${w.id}')">✏️</button>${c===0?`<button class="wmb del" onclick="playClick(); doDel('${w.id}','${w.name}')">🗑️</button>`:''}</div></div>`;}).join('');
@@ -485,7 +537,14 @@ async function addIt(type,pid){
 
 async function doDis(id,n){
   const p=patients.find(x=>x.id===id);
-  try{await sb('DELETE','patients',null,'?id=eq.'+id);patients=patients.filter(x=>x.id!==id);await log('discharge','خرّج: '+n,p.ward_id);closeModal();renderAll();toast('🏠 تم تخريج المريض بنجاح');}catch(e){alert(e.message);}
+  try{
+    const archData={id:p.id,name:p.name,age:p.age,bed:p.bed,diagnosis:p.diagnosis,discharged_at:new Date().toISOString()};
+    try { await sb('POST','archive',archData); archivePatients.unshift(archData); } catch(ae){}
+    await sb('DELETE','patients',null,'?id=eq.'+id);
+    patients=patients.filter(x=>x.id!==id);
+    await log('discharge','خرّج: '+n,p.ward_id);
+    closeModal();renderAll();toast('🏠 تم تخريج المريض للأرشيف');
+  }catch(e){alert(e.message);}
 }
 
 async function doAddW(){
